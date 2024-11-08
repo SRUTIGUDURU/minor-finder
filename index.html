@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-
     <title>MINOR FINDER</title>
 </head>
 <body>
@@ -143,7 +142,7 @@
                 allBranches.forEach(br => {
                     if (br !== branch && br !== "PHARMA" && !(branch === "MNC" && (br === "CS" || br === "MATH"))) {
                         const ratingDiv = document.createElement("div");
-                        ratingDiv.innerHTML = `
+                        ratingDiv.innerHTML = `   
                             <label>${br}</label>
                             <input type="radio" name="${br}" value="0"> 0
                             <input type="radio" name="${br}" value="1"> 1
@@ -180,7 +179,7 @@
         function updateOpels() {
             const dualBranch = document.getElementById("dualBranch").value;
             const financeOpel = document.getElementById("Finance");
-            financeOpel.style.display = dualBranch === "ECO" ? "none" : "block";
+            financeOpel.style.display = dualBranch === "ECO" ? "block" : "none";
         }
 
         function storeProgrammingLanguages() {
@@ -192,7 +191,6 @@
         function submitForm(e) {
             e.preventDefault();
             const formData = new FormData(document.getElementById('surveyForm'));
-
             fetch('/submit', {
                 method: 'POST',
                 body: formData
@@ -201,7 +199,9 @@
             .then(data => {
                 displayTopMinors(data.top_5_minors);
             })
-            .catch(error => console.error("Error submitting form:", error));
+            .catch(error => {
+                console.error("Error submitting form:", error);
+            });
         }
 
         function displayTopMinors(topMinors) {
@@ -216,7 +216,9 @@
             });
 
             resultContainer.appendChild(list);
+            resultContainer.style.display = "block";
         }
     </script>
 </body>
 </html>
+
