@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>Branch Survey Form</h1>
-    <form id="surveyForm" action="/submit" method="POST">
+    <form id="surveyForm" action="/submit" method="POST" onsubmit="storeProgrammingLanguages()">
         <!-- Branch Selection -->
         <label for="branch">What is your branch?</label>
         <select id="branch" name="branch" onchange="showBranchQuestion()">
@@ -82,21 +82,24 @@
                 <input type="checkbox" name="RoboticsAndAutomation" value="5"> Yes
             </div>
         </div>
-      <!-- Programming Languages -->
-    <label for="programmingLanguages">What programming languages do you know?</label>
-    <div id="programmingLanguages">
-      <input type="checkbox" name="programmingLanguages" value="Matlab"> Matlab
-      <input type="checkbox" name="programmingLanguages" value="Simulink"> Simulink
-      <input type="checkbox" name="programmingLanguages" value="Python"> Python
-      <input type="checkbox" name="programmingLanguages" value="C++"> C++
-      <input type="checkbox" name="programmingLanguages" value="C"> C
-      <input type="checkbox" name="programmingLanguages" value="R"> R
-      <input type="checkbox" name="programmingLanguages" value="Java"> Java
-      <input type="checkbox" name="programmingLanguages" value="Go"> Go
-      <input type="checkbox" name="programmingLanguages" value="SQL"> SQL
-      <input type="checkbox" name="programmingLanguages" value="JavaScript"> JavaScript
-      <input type="checkbox" name="programmingLanguages" value="Julia"> Julia
-    </div>
+
+        <!-- Programming Languages -->
+        <label for="programmingLanguages">What programming languages do you know?</label>
+        <div id="programmingLanguages">
+            <input type="checkbox" name="programmingLanguages" value="Matlab"> Matlab
+            <input type="checkbox" name="programmingLanguages" value="Simulink"> Simulink
+            <input type="checkbox" name="programmingLanguages" value="Python"> Python
+            <input type="checkbox" name="programmingLanguages" value="C++"> C++
+            <input type="checkbox" name="programmingLanguages" value="C"> C
+            <input type="checkbox" name="programmingLanguages" value="R"> R
+            <input type="checkbox" name="programmingLanguages" value="Java"> Java
+            <input type="checkbox" name="programmingLanguages" value="Go"> Go
+            <input type="checkbox" name="programmingLanguages" value="SQL"> SQL
+            <input type="checkbox" name="programmingLanguages" value="JavaScript"> JavaScript
+            <input type="checkbox" name="programmingLanguages" value="Julia"> Julia
+        </div>
+        <!-- Hidden field to store selected programming languages -->
+        <input type="hidden" id="selectedLanguages" name="selectedLanguages">
 
         <!-- Submit Button -->
         <button type="submit">Submit</button>
@@ -126,13 +129,14 @@
         }
 
         function updateBranchRatings() {
-            const branch = document.getElementById("branch").value;
-            const dualBranch = document.getElementById("dualBranch").value;
-            const branchRatings = document.getElementById("branchRatings");
-            const allBranches = ["CS", "ECE", "EEE", "ENI", "MECH", "CHEM", "CIVIL"];
-            const allDualBranches = ["ECO", "MATH", "PHYSICS", "CHEMISTRY", "BIO"];
-            branchRatings.innerHTML = "";
+        const branch = document.getElementById("branch").value;
+        const dualBranch = document.getElementById("dualBranch").value;
+        const branchRatings = document.getElementById("branchRatings");
+        const allBranches = ["CS", "ECE", "EEE", "ENI", "MECH", "CHEM", "CIVIL"];
+        const allDualBranches = ["ECO", "MATH", "PHYSICS", "CHEMISTRY", "BIO"];
+        branchRatings.innerHTML = "";
 
+        if (branch) {
             // Exclude primary and dual branch from the ratings
             allBranches.forEach(br => {
                 if (br !== branch && br !== "PHARMA" && !(branch === "MNC" && (br === "CS" || br === "MATH"))) {
@@ -167,12 +171,21 @@
                 }
             });
             document.getElementById("interestRating").style.display = "block";
+        } else {
+            document.getElementById("interestRating").style.display = "none";
         }
+    }
 
         function updateOpels() {
             const dualBranch = document.getElementById("dualBranch").value;
             const financeOpel = document.getElementById("Finance");
             financeOpel.style.display = dualBranch === "ECO" ? "none" : "block";
+        }
+
+        function storeProgrammingLanguages() {
+            const selectedLanguages = Array.from(document.querySelectorAll('input[name="programmingLanguages"]:checked'))
+                .map(input => input.value);
+            document.getElementById("selectedLanguages").value = selectedLanguages.join(", ");
         }
     </script>
 </body>
