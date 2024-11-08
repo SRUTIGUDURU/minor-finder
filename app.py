@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
@@ -34,17 +34,17 @@ def parse_form_data(form_data):
     return branch_data, branch_interest_ratings, opels_scores, programming_languages_scores
 
 def aero(branch_data, opels_scores, programming_languages_scores):
-    aeronautics_score = opels_scores.get("Aeronautics", 0)
+    aeronautics_score = opels_scores["Aeronautics"]
     if aeronautics_score == 0:
         return 0
     total_score = (
         aeronautics_score +
         branch_data.get("EEE", 0) +
         branch_data.get("MECH", 0) +
-        programming_languages_scores.get("Matlab", 0) +
-        programming_languages_scores.get("Simulink", 0) +
-        programming_languages_scores.get("Python", 0) +
-        programming_languages_scores.get("C++", 0)
+        programming_languages_scores["Matlab"] +
+        programming_languages_scores["Simulink"] +
+        programming_languages_scores["Python"] +
+        programming_languages_scores["C++"]
     )
     return total_score / 37.5
 
@@ -53,15 +53,15 @@ def ce(branch_data, opels_scores, programming_languages_scores):
         branch_data.get("ECO", 0) +
         branch_data.get("CS", 0) +
         branch_data.get("MATH", 0) +
-        programming_languages_scores.get("C", 0) +
-        programming_languages_scores.get("C++", 0) +
-        programming_languages_scores.get("Python", 0) +
-        programming_languages_scores.get("R", 0) +
-        programming_languages_scores.get("Java", 0) +
-        programming_languages_scores.get("Go", 0) +
-        programming_languages_scores.get("SQL", 0) +
-        programming_languages_scores.get("JavaScript", 0) +
-        programming_languages_scores.get("Julia", 0)
+        programming_languages_scores["C"] +
+        programming_languages_scores["C++"] +
+        programming_languages_scores["Python"] +
+        programming_languages_scores["R"] +
+        programming_languages_scores["Java"] +
+        programming_languages_scores["Go"] +
+        programming_languages_scores["SQL"] +
+        programming_languages_scores["JavaScript"] +
+        programming_languages_scores["Julia"]
     )
     return total_score / 62.5
 
@@ -71,15 +71,15 @@ def cni(branch_data, opels_scores, programming_languages_scores):
         return 0
     total_score = (
         cs_score +
-        programming_languages_scores.get("C", 0) +
-        programming_languages_scores.get("C++", 0) +
-        programming_languages_scores.get("Python", 0) +
-        programming_languages_scores.get("R", 0) +
-        programming_languages_scores.get("Java", 0) +
-        programming_languages_scores.get("Go", 0) +
-        programming_languages_scores.get("SQL", 0) +
-        programming_languages_scores.get("JavaScript", 0) +
-        programming_languages_scores.get("Julia", 0)
+        programming_languages_scores["C"] +
+        programming_languages_scores["C++"] +
+        programming_languages_scores["Python"] +
+        programming_languages_scores["R"] +
+        programming_languages_scores["Java"] +
+        programming_languages_scores["Go"] +
+        programming_languages_scores["SQL"] +
+        programming_languages_scores["JavaScript"] +
+        programming_languages_scores["Julia"]
     )
     return total_score / 50
 
