@@ -177,6 +177,12 @@ def semiconductors(branch_data, opels_scores, programming_languages_scores):
         )
         return total_score / 35
 
+from flask import Flask, request, jsonify, render_template
+
+app = Flask(__name__)
+
+# Existing functions and logic
+
 @app.route('/submit', methods=['POST'])
 def submit_form():
     form_data = request.form.to_dict()
@@ -185,23 +191,24 @@ def submit_form():
     # Parse data from the form
     branch_data, branch_interest_ratings, opels_scores, programming_languages_scores = parse_form_data(form_data)
 
-    # Call functions and collect results
+    # Call functions and store each result with corresponding minor name
     results = {
-        "Aero": aero(branch_data, opels_scores, programming_languages_scores),
-        "CNI": cni(branch_data, opels_scores, programming_languages_scores),
-        "DS": ds(branch_data, opels_scores, programming_languages_scores),
+        "Aeronautics": aero(branch_data, opels_scores, programming_languages_scores),
+        "Computing and Intelligence": cni(branch_data, opels_scores, programming_languages_scores),
+        "Data Science": ds(branch_data, opels_scores, programming_languages_scores),
         "Entrepreneur": entrepreneur(branch_data, opels_scores, programming_languages_scores),
         "Finance": fin(branch_data, opels_scores, programming_languages_scores),
-        # Add additional functions here as needed
+        "Computational Economics": ec(branch_data, opels_scores, programming_languages_scores),
+        "Semiconductors": semiconductors(branch_data, opels_scores, programming_languages_scores),
+        "Supply Chain Analysis": sca(branch_data, opels_scores, programming_languages_scores),
+        "Robotics And Automation": raa(branch_data, opels_scores, programming_languages_scores),
+        "Physics": phy(branch_data, opels_scores, programming_languages_scores),
+        "Material Science Engineering": mse(branch_data, opels_scores, programming_languages_scores),
+        "Management": management(branch_data, opels_scores, programming_languages_scores),
     }
 
-    print("Form submission results:", results)
-    return jsonify(results)
+    # Find top 5 minors
+    sorted_minors = sorted(results.items(), key=lambda x: x[1], reverse=True)[:5]
+    top_5_minors = {name: score for name, score in sorted_minors}
 
-@app.route('/')
-def display_form():
-    return render_template('form.html')  # Ensure 'form.html' is in the 'templates' directory
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
+    return jsonify(top_5_minors)
