@@ -189,35 +189,41 @@
         }
 
         function submitForm(e) {
-            e.preventDefault();
-            const formData = new FormData(document.getElementById('surveyForm'));
-            fetch('/submit', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                displayTopMinors(data.top_5_minors);
-            })
-            .catch(error => {
-                console.error("Error submitting form:", error);
-            });
-        }
+    e.preventDefault();  // Prevents form from reloading the page
 
-        function displayTopMinors(topMinors) {
-            const resultContainer = document.getElementById("resultContainer");
-            resultContainer.innerHTML = "<h2>THE TOP FIVE MINORS FOR YOU ARE:</h2>";
+    // Prepare data from the form
+    const formData = new FormData(document.getElementById('surveyForm'));
 
-            const list = document.createElement("ul");
-            Object.entries(topMinors).forEach(([minor, score]) => {
-                const listItem = document.createElement("li");
-                listItem.textContent = `${minor}: ${score.toFixed(2)}`;
-                list.appendChild(listItem);
-            });
+    // Send data via fetch request
+    fetch('/submit', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())  // Expecting JSON response
+    .then(data => {
+        displayTopMinors(data.top_5_minors);
+    })
+    .catch(error => {
+        console.error("Error submitting form:", error);
+    });
+}
 
-            resultContainer.appendChild(list);
-            resultContainer.style.display = "block";
-        }
+function displayTopMinors(topMinors) {
+    const resultContainer = document.getElementById("resultContainer");
+    resultContainer.style.display = "block";  // Make the results container visible
+
+    resultContainer.innerHTML = "<h2>THE TOP FIVE MINORS FOR YOU ARE:</h2>";
+
+    const list = document.createElement("ul");
+    Object.entries(topMinors).forEach(([minor, score]) => {
+        const listItem = document.createElement("li");
+        listItem.textContent = `${minor}: ${score.toFixed(2)}`;
+        list.appendChild(listItem);
+    });
+
+    resultContainer.appendChild(list);
+}
+
     </script>
 </body>
 </html>
