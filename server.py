@@ -213,6 +213,3 @@ def submit_form():
 
     return render_template('index.html', top_5_minors=top_5_minors)
 
-    # Render a result page
-    return render_template('results.html', top_5_minors=top_5_minors)
-
