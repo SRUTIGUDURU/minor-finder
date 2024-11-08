@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINOR FINDER</title>
+</head>
+<body>
+    <h1>MINOR FINDER </h1>
+    <form id="surveyForm" action="/submit" method="POST">
+        
+        <!-- Branch Selection -->
+        <label for="branch">What is your branch?</label>
+        <select id="branch" name="branch" onchange="showBranchQuestion()">
+            <option value="">Select Branch</option>
+            <option value="CS">CS</option>
+            <option value="MNC">MNC</option>
+            <option value="ECE">ECE</option>
+            <option value="EEE">EEE</option>
+            <option value="ENI">ENI</option>
+            <option value="MECH">MECH</option>
+            <option value="CHEM">CHEM</option>
+            <option value="CIVIL">CIVIL</option>
+            <option value="PHARMA">PHARMA</option>
+        </select>
+        
+        <!-- Temporary Question: Do you like your branch? -->
+        <div id="branchLikeQuestion" style="display: none;">
+            <label>Do you like your branch?</label>
+            <input type="radio" name="branchLike" value="yes" onclick="assignBranchValue(7.5)"> Yes
+            <input type="radio" name="branchLike" value="no" onclick="assignBranchValue(2.5)"> No
+        </div>
+
+        <!-- Dual Branch Selection -->
+        <label for="dualBranch">What is your Dual Branch?</label>
+        <select id="dualBranch" name="dualBranch" onchange="assignDualBranchValue()">
+            <option value="">Select Dual Branch</option>
+            <option value="ECO">ECO</option>
+            <option value="MATH">MATH</option>
+            <option value="PHYSICS">PHYSICS</option>
+            <option value="CHEMISTRY">CHEMISTRY</option>
+            <option value="BIO">BIO</option>
+            <option value="None">None</option>
+        </select>
+
+        <!-- Interest Rating for Other Branches -->
+        <div id="interestRating" style="display: none;">
+            <h3>Rate other branches based on your interest</h3>
+            <div id="branchRatings"></div>
+        </div>
+
+        <!-- Opel Selection -->
+        <h3>Select Opels</h3>
+        <div id="opels">
+            <div id="Aeronautics">
+                <label>Aeronautics</label>
+                <input type="checkbox" name="Aeronautics" value="0"> No
+                <input type="checkbox" name="Aeronautics" value="3"> Maybe
+                <input type="checkbox" name="Aeronautics" value="5"> Yes
+            </div>
+            <div id="Entrepreneurship">
+                <label>Entrepreneurship</label>
+                <input type="checkbox" name="Entrepreneurship" value="0"> No
+                <input type="checkbox" name="Entrepreneurship" value="3"> Maybe
+                <input type="checkbox" name="Entrepreneurship" value="5"> Yes
+            </div>
+            <div id="Finance">
+                <label>Finance</label>
+                <input type="checkbox" name="Finance" value="0"> No
+                <input type="checkbox" name="Finance" value="3"> Maybe
+                <input type="checkbox" name="Finance" value="5"> Yes
+            </div>
+            <div id="MaterialSciences">
+                <label>Material Sciences</label>
+                <input type="checkbox" name="MaterialSciences" value="0"> No
+                <input type="checkbox" name="MaterialSciences" value="3"> Maybe
+                <input type="checkbox" name="MaterialSciences" value="5"> Yes
+            </div>
+            <div id="RoboticsAndAutomation">
+                <label>Robotics and Automation</label>
+                <input type="checkbox" name="RoboticsAndAutomation" value="0"> No
+                <input type="checkbox" name="RoboticsAndAutomation" value="3"> Maybe
+                <input type="checkbox" name="RoboticsAndAutomation" value="5"> Yes
+            </div>
+        </div>
+        <!-- Programming Languages -->
+<label for="programmingLanguages">What programming languages do you know?</label>
+<div id="programmingLanguages">
+    <input type="checkbox" name="programmingLanguages" value="Matlab"> Matlab
+    <input type="checkbox" name="programmingLanguages" value="Simulink"> Simulink
+    <input type="checkbox" name="programmingLanguages" value="Python"> Python
+    <input type="checkbox" name="programmingLanguages" value="C++"> C++
+    <input type="checkbox" name="programmingLanguages" value="C"> C
+    <input type="checkbox" name="programmingLanguages" value="R"> R
+    <input type="checkbox" name="programmingLanguages" value="Java"> Java
+    <input type="checkbox" name="programmingLanguages" value="Go"> Go
+    <input type="checkbox" name="programmingLanguages" value="SQL"> SQL
+    <input type="checkbox" name="programmingLanguages" value="JavaScript"> JavaScript
+    <input type="checkbox" name="programmingLanguages" value="Julia"> Julia
+</div>
+
+        <!-- Submit Button -->
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        let branchValue = 0;
+        let dualBranchValue = 0;
+    
+        function showBranchQuestion() {
+            const branch = document.getElementById("branch").value;
+            const branchLikeQuestion = document.getElementById("branchLikeQuestion");
+            branchLikeQuestion.style.display = branch ? "block" : "none";
+            updateBranchRatings();
+        }
+    
+        function assignBranchValue(value) {
+            branchValue = value;
+            document.getElementById("branchLikeQuestion").style.display = "none";
+        }
+    
+        function assignDualBranchValue() {
+            const dualBranch = document.getElementById("dualBranch").value;
+            dualBranchValue = dualBranch !== "None" ? 7.5 : 0;
+            updateBranchRatings();
+            updateOpels();
+        }
+    
+        function updateBranchRatings() {
+            const branch = document.getElementById("branch").value;
+            const dualBranch = document.getElementById("dualBranch").value;
+            const branchRatings = document.getElementById("branchRatings");
+            const allBranches = ["CS", "ECE", "EEE", "ENI", "MECH", "CHEM", "CIVIL"];
+            const allDualBranches = ["ECO", "MATH", "PHYSICS", "CHEMISTRY", "BIO"];
+            branchRatings.innerHTML = "";
+            // Exclude primary and dual branch from the ratings
+            allBranches.forEach(br => {
+                if (br !== branch && br !== "PHARMA" && !(branch === "MNC" && (br === "CS" || br === "MATH"))) {
+                    const ratingDiv = document.createElement("div");
+                    ratingDiv.innerHTML = `
+                        <label>${br}</label>
+                        <input type="radio" name="${br}" value="0"> 0
+                        <input type="radio" name="${br}" value="1"> 1
+                        <input type="radio" name="${br}" value="2"> 2
+                        <input type="radio" name="${br}" value="3"> 3
+                        <input type="radio" name="${br}" value="4"> 4
+                        <input type="radio" name="${br}" value="5"> 5
+                    `;
+                    branchRatings.appendChild(ratingDiv);
+                }
+            });
+            // Include all dual branches except the selected dual branch and None
+            allDualBranches.forEach(dualBr => {
+                if (dualBr !== dualBranch && !(branch === "MNC" && dualBr === "MATH")) {
+                    const ratingDiv = document.createElement("div");
+                    ratingDiv.innerHTML = `
+                        <label>${dualBr}</label>
+                        <input type="radio" name="${dualBr}" value="0"> 0
+                        <input type="radio" name="${dualBr}" value="1"> 1
+                        <input type="radio" name="${dualBr}" value="2"> 2
+                        <input type="radio" name="${dualBr}" value="3"> 3
+                        <input type="radio" name="${dualBr}" value="4"> 4
+                        <input type="radio" name="${dualBr}" value="5"> 5
+                    `;
+                    branchRatings.appendChild(ratingDiv);
+                }
+            });
+        }
+    
+        function updateOpels() {
+            const opels = document.getElementById("opels");
+            const opelOptions = ["Aeronautics", "Entrepreneurship", "Finance", "MaterialSciences", "RoboticsAndAutomation"];
+            opels.innerHTML = "";
+            opelOptions.forEach(opel => {
+                const opelDiv = document.createElement("div");
+                opelDiv.innerHTML = `
+                    <label>${opel}</label>
+                    <input type="checkbox" name="${opel}" value="0"> No
+                    <input type="checkbox" name="${opel}" value="3"> Maybe
+                    <input type="checkbox" name="${opel}" value="5"> Yes
+                `;
+                opels.appendChild(opelDiv);
+            });
+        }
+    </script>
+</body>
+</html>
