@@ -198,7 +198,7 @@ def submit_form():
         "Data Science": ds(branch_data, opels_scores, programming_languages_scores),
         "Entrepreneur": entrepreneur(branch_data, opels_scores, programming_languages_scores),
         "Finance": fin(branch_data, opels_scores, programming_languages_scores),
-        "Computational Economics": ec(branch_data, opels_scores, programming_languages_scores),
+        "Computational Economics": ce(branch_data, opels_scores, programming_languages_scores),
         "Semiconductors": semiconductors(branch_data, opels_scores, programming_languages_scores),
         "Supply Chain Analysis": sca(branch_data, opels_scores, programming_languages_scores),
         "Robotics And Automation": raa(branch_data, opels_scores, programming_languages_scores),
@@ -210,6 +210,8 @@ def submit_form():
     # Find top 5 minors
     sorted_minors = sorted(results.items(), key=lambda x: x[1], reverse=True)[:5]
     top_5_minors = {name: score for name, score in sorted_minors}
+
+    return render_template('index.html', top_5_minors=top_5_minors)
 
     # Render a result page
     return render_template('results.html', top_5_minors=top_5_minors)
