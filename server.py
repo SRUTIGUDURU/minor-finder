@@ -211,5 +211,6 @@ def submit_form():
     sorted_minors = sorted(results.items(), key=lambda x: x[1], reverse=True)[:5]
     top_5_minors = {name: score for name, score in sorted_minors}
 
-    # Render HTML template with the top minors
-    return render_template("result.html", top_5_minors=top_5_minors)
+    # Render a result page
+    return render_template('results.html', top_5_minors=top_5_minors)
+
