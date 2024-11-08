@@ -116,29 +116,29 @@
     {% endif %}
 
     <script>
-        let branchValue = 0;
-        let dualBranchValue = 0;
+    let branchValue = 0;
+    let dualBranchValue = 0;
 
-        function showBranchQuestion() {
-            const branch = document.getElementById("branch").value;
-            const branchLikeQuestion = document.getElementById("branchLikeQuestion");
-            branchLikeQuestion.style.display = branch ? "block" : "none";
-            updateBranchRatings();
-        }
+    function showBranchQuestion() {
+        const branch = document.getElementById("branch").value;
+        const branchLikeQuestion = document.getElementById("branchLikeQuestion");
+        branchLikeQuestion.style.display = branch ? "block" : "none";
+        updateBranchRatings();
+    }
 
-        function assignBranchValue(value) {
-            branchValue = value;
-            document.getElementById("branchLikeQuestion").style.display = "none";
-        }
+    function assignBranchValue(value) {
+        branchValue = value;
+        document.getElementById("branchLikeQuestion").style.display = "none";
+    }
 
-        function assignDualBranchValue() {
-            const dualBranch = document.getElementById("dualBranch").value;
-            dualBranchValue = dualBranch !== "None" ? 7.5 : 0;
-            updateBranchRatings();
-            updateOpels();
-        }
+    function assignDualBranchValue() {
+        const dualBranch = document.getElementById("dualBranch").value;
+        dualBranchValue = dualBranch !== "None" ? 7.5 : 0;
+        updateBranchRatings();
+        updateOpels();
+    }
 
-        function updateBranchRatings() {
+    function updateBranchRatings() {
         const branch = document.getElementById("branch").value;
         const dualBranch = document.getElementById("dualBranch").value;
         const branchRatings = document.getElementById("branchRatings");
@@ -186,22 +186,23 @@
         }
     }
 
-        function updateOpels() {
-            const dualBranch = document.getElementById("dualBranch").value;
-            const financeOpel = document.getElementById("Finance");
-            financeOpel.style.display = dualBranch === "ECO" ? "none" : "block";
-        }
+    function updateOpels() {
+        const dualBranch = document.getElementById("dualBranch").value;
+        const financeOpel = document.getElementById("Finance");
+        financeOpel.style.display = dualBranch === "ECO" ? "none" : "block";
+    }
 
-        function storeProgrammingLanguages() {
-            const selectedLanguages = Array.from(document.querySelectorAll('input[name="programmingLanguages"]:checked'))
-                .map(input => input.value);
-            document.getElementById("selectedLanguages").value = selectedLanguages.join(", ");
-        }
+    function storeProgrammingLanguages() {
+        const selectedLanguages = Array.from(document.querySelectorAll('input[name="programmingLanguages"]:checked'))
+            .map(input => input.value);
+        document.getElementById("selectedLanguages").value = selectedLanguages.join(", ");
+    }
+
     document.getElementById('surveyForm').addEventListener('submit', function(e) {
         e.preventDefault(); // Prevent form submission
 
         const formData = new FormData(this);
-        
+
         // Store selected languages in the hidden input field
         const selectedLanguages = Array.from(document.querySelectorAll('input[name="programmingLanguages"]:checked'))
             .map(input => input.value);
@@ -212,17 +213,34 @@
             method: 'POST',
             body: formData
         })
-        .then(response => response.text())
-        .then(html => {
-            // On successful submission, navigate to a new page (results page)
-            window.location.href = "/results"; // Assuming '/results' renders the result page
+        .then(response => response.json())  // Assuming response returns JSON
+        .then(data => {
+            // Display the top 5 minors on the same page
+            displayTopMinors(data.top_5_minors);
         })
         .catch(error => {
             console.error("Error submitting form:", error);
         });
     });
 
-        
-    </script>
+    function displayTopMinors(topMinors) {
+        const resultContainer = document.getElementById("resultContainer");
+        resultContainer.innerHTML = "";  // Clear any previous results
+
+        const title = document.createElement("h2");
+        title.innerText = "THE TOP FIVE MINORS FOR YOU ARE:";
+        resultContainer.appendChild(title);
+
+        const list = document.createElement("ul");
+        topMinors.forEach(minor => {
+            const listItem = document.createElement("li");
+            listItem.innerText = `${minor.name}: ${minor.score}`;
+            list.appendChild(listItem);
+        });
+
+        resultContainer.appendChild(list);
+    }
+</script>
+
 </body>
 </html>
