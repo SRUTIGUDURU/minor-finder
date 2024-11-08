@@ -105,6 +105,15 @@
         <!-- Submit Button -->
         <button type="submit">Submit</button>
     </form>
+    <!-- Display the top 5 minors -->
+    {% if top_5_minors %}
+    <h2>THE TOP FIVE MINORS FOR YOU ARE:</h2>
+    <ul>
+        {% for minor, score in top_5_minors.items() %}
+            <li>{{ minor }}: {{ score }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 
     <script>
         let branchValue = 0;
