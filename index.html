@@ -188,6 +188,31 @@
                 .map(input => input.value);
             document.getElementById("selectedLanguages").value = selectedLanguages.join(", ");
         }
+    document.getElementById('surveyForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevent form submission
+
+        const formData = new FormData(this);
+        
+        // Store selected languages in the hidden input field
+        const selectedLanguages = Array.from(document.querySelectorAll('input[name="programmingLanguages"]:checked'))
+            .map(input => input.value);
+        formData.set('selectedLanguages', selectedLanguages.join(", "));
+
+        // Send the form data using AJAX
+        fetch('/submit', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(html => {
+            // On successful submission, navigate to a new page (results page)
+            window.location.href = "/results"; // Assuming '/results' renders the result page
+        })
+        .catch(error => {
+            console.error("Error submitting form:", error);
+        });
+    });
+
         
     </script>
 </body>
