@@ -35,8 +35,8 @@
             <label for="dualBranch">Select your dual branch:</label>
             <select id="dualBranch" name="dualBranch" required>
                 <option value="None">None</option>
-                <option value="ECO">ECO</option>
-                <option value="MATH">MATH</option>
+                <option value="ECO">ECONOMICS</option>
+                <option value="MATH">MATHEMATICS</option>
                 <option value="CHEMISTRY">CHEMISTRY</option>
                 <option value="PHYSICS">PHYSICS</option>
                 <option value="BIO">BIOLOGY</option>
@@ -90,7 +90,7 @@
         function updateBranchRatings() {
             const selectedBranch = branchSelect.value;
             const selectedDualBranch = dualBranchSelect.value;
-            const branches = ["CS", "ECE", "EEE", "ENI", "MECH", "CHEM", "CIVIL", "PHARMA", "ECO", "MATH", "CHEMISTRY", "BIO", "PHYSICS"];
+            const branches = ["CSE", "ECE", "EEE", "ENI", "MECHANICAL", "CHEMICAL", "CIVIL", "PHARMACY", "ECONOMICS", "MATHEMATICS", "CHEMISTRY", "BIOLOGY", "PHYSICS"];
 
             branchRatingsDiv.innerHTML = '';
             
