@@ -15,21 +15,14 @@ def parse_form_data(form_data):
     
     # Initialize branch scores
     branch_scores = {
-        "CS": 0, "ECE": 0, "EEE": 0, "ENI": 0, "MECH": 0, 
-        "CHEM": 0, "CIVIL": 0, "ECO": 0, "MATH": 0,
-        "PHYSICS": 0, "CHEMISTRY": 0, "BIO": 0
+        "CSE": 0, "ECE": 0, "EEE": 0, "ENI": 0, "MECHANICAL": 0, 
+        "CHEMICAL": 0, "CIVIL": 0, "ECONOMICS": 0, "MATHEMATICS": 0,
+        "PHYSICS": 0, "CHEMISTRY": 0, "BIOLOGY": 0
     }
     
     # Set score for selected branch
     if selected_branch in branch_scores:
         branch_scores[selected_branch] = 7.5 if branch_like == "yes" else 2.5
-    
-    # Set score for dual branch - handle Physics specially
-    if dual_branch in branch_scores and dual_branch != "None":
-        if dual_branch == "PHYSICS":
-            branch_scores["PHYSICS"] = 0  # Don't count PHYSICS if it's the dual branch
-        else:
-            branch_scores[dual_branch] = 7.5
     
     # Get ratings for other branches
     for branch in branch_scores.keys():
@@ -64,7 +57,7 @@ def aero(branch_scores, opels_scores, programming_languages_scores):
     total_score = (
         aeronautics_score +
         branch_scores["EEE"] +
-        branch_scores["MECH"] +
+        branch_scores["MECHANICAL"] +
         programming_languages_scores["Matlab"] +
         programming_languages_scores["Simulink"] +
         programming_languages_scores["Python"] +
@@ -74,9 +67,9 @@ def aero(branch_scores, opels_scores, programming_languages_scores):
 
 def ce(branch_scores, opels_scores, programming_languages_scores):
     total_score = (
-        branch_scores["ECO"] +
-        branch_scores["CS"] +
-        branch_scores["MATH"] +
+        branch_scores["ECONOMICS"] +
+        branch_scores["CSE"] +
+        branch_scores["MATHEMATICS"] +
         programming_languages_scores["C"] +
         programming_languages_scores["C++"] +
         programming_languages_scores["Python"] +
@@ -90,7 +83,7 @@ def ce(branch_scores, opels_scores, programming_languages_scores):
     return (total_score / 62.5) * 100
 
 def cni(branch_scores, opels_scores, programming_languages_scores):
-    cs_score = branch_scores["CS"]
+    cs_score = branch_scores["CSE"]
     if cs_score in [7.5, 2.5]:
         return 0
     total_score = (
@@ -109,8 +102,8 @@ def cni(branch_scores, opels_scores, programming_languages_scores):
 
 def ds(branch_scores, opels_scores, programming_languages_scores):
     total_score = (
-        branch_scores["MATH"] +
-        branch_scores["CS"]
+        branch_scores["MATHEMATICS"] +
+        branch_scores["CSE"]
     )
     return (total_score / 35) * 100
 
@@ -118,7 +111,7 @@ def entrepreneur(branch_scores, opels_scores, programming_languages_scores):
     score = opels_scores["Entrepreneurship"]
     if score == 0:
         return 0
-    total_score = score + branch_scores["ECO"]
+    total_score = score + branch_scores["ECONOMICS"]
     return (total_score / 12.5) * 100
 
 def fin(branch_scores, opels_scores, programming_languages_scores):
@@ -131,8 +124,8 @@ def mse(branch_scores, opels_scores, programming_languages_scores):
         return 0
     total_score = (
         materials_score +
-        branch_scores["CHEM"] +
-        branch_scores["MECH"] +
+        branch_scores["CHEMICAL"] +
+        branch_scores["MECHANICAL"] +
         branch_scores["CHEMISTRY"] +
         branch_scores["PHYSICS"]
     )
@@ -161,14 +154,14 @@ def raa(branch_scores, opels_scores, programming_languages_scores):
         branch_scores["ECE"] +
         branch_scores["EEE"] +
         branch_scores["ENI"] +
-        branch_scores["MECH"]
+        branch_scores["MECHANICAL"]
     )
     return (total_score / 27.5) * 100
 
 def sca(branch_scores, opels_scores, programming_languages_scores):
     total_score = (
-        branch_scores["MATH"] +
-        branch_scores["MECH"]
+        branch_scores["MATHEMATICS"] +
+        branch_scores["MECHANICAL"]
     )
     return (total_score / 15) * 100
 
