@@ -6,33 +6,34 @@ CORS(app)
 
 def parse_form_data(form_data):
     """
-    Parses and structures the form data from the survey form submission.
+    Parses form data and structures it into three categories:
+    branch scores, OPEL scores, and programming language scores.
     """
-    # Get branch data
+    # Branch data
     selected_branch = form_data.get("branch", "")
-    branch_like = form_data.get("branchLike", "")
+    branch_like = form_data.get("branchLike", "").lower() == "yes"
     dual_branch = form_data.get("dualBranch", "")
     
-    # Initialize branch scores with default values
+    # Initialize branch scores
     branch_scores = {
-        "CSE": 0, "ECE": 0, "EEE": 0, "ENI": 0, "MECHANICAL": 0, 
+        "CSE": 0, "ECE": 0, "EEE": 0, "ENI": 0, "MECHANICAL": 0,
         "CHEMICAL": 0, "CIVIL": 0, "ECONOMICS": 0, "MATHEMATICS": 0,
         "PHYSICS": 0, "CHEMISTRY": 0, "BIOLOGY": 0
     }
     
-    # Set score for selected branch based on whether they like it
+    # Set score based on branch preference
     if selected_branch in branch_scores:
-        branch_scores[selected_branch] = 7.5 if branch_like == "yes" else 2.5
-    
-    # Get ratings for other branches
-    for branch in branch_scores.keys():
+        branch_scores[selected_branch] = 7.5 if branch_like else 2.5
+
+    # Get branch ratings, excluding selected and dual branches
+    for branch, score in branch_scores.items():
         if branch != selected_branch and branch != dual_branch:
             try:
-                branch_scores[branch] = float(form_data.get(branch, 0))  # Get the rating for the branch
-            except (ValueError, TypeError):
-                branch_scores[branch] = 0  # If invalid value, set to 0
+                branch_scores[branch] = float(form_data.get(branch, 0))
+            except ValueError:
+                branch_scores[branch] = 0
 
-    # Parse OPEL scores (fixed scale 0-5)
+    # Parse OPEL scores
     opels_scores = {
         "Aeronautics": float(form_data.get("Aeronautics", 0)),
         "Entrepreneurship": float(form_data.get("Entrepreneurship", 0)),
@@ -41,8 +42,8 @@ def parse_form_data(form_data):
         "RoboticsAndAutomation": float(form_data.get("RoboticsAndAutomation", 0))
     }
 
-    # Parse programming languages (selected languages)
-    selected_languages = form_data.get("selectedLanguages", "").split(", ") if form_data.get("selectedLanguages") else []
+    # Parse programming languages
+    selected_languages = form_data.get("selectedLanguages", "").split(", ")
     programming_languages_scores = {
         lang: 5 if lang in selected_languages else 0
         for lang in ["Matlab", "Simulink", "Python", "C++", "C", "R", "Java", "Go", "SQL", "JavaScript", "Julia"]
@@ -50,12 +51,16 @@ def parse_form_data(form_data):
 
     return branch_scores, opels_scores, programming_languages_scores
 
+# Minor score calculation helpers
+def calculate_percentage(score, max_score):
+    return (score / max_score) * 100 if max_score > 0 else 0
+
+# Individual minor scoring functions
 def aero(branch_scores, opels_scores, programming_languages_scores):
-    aeronautics_score = opels_scores["Aeronautics"]
-    if aeronautics_score == 0:
+    if opels_scores["Aeronautics"] == 0:
         return 0
     total_score = (
-        aeronautics_score +
+        opels_scores["Aeronautics"] +
         branch_scores["EEE"] +
         branch_scores["MECHANICAL"] +
         programming_languages_scores["Matlab"] +
@@ -63,24 +68,16 @@ def aero(branch_scores, opels_scores, programming_languages_scores):
         programming_languages_scores["Python"] +
         programming_languages_scores["C++"]
     )
-    return (total_score / 37.5) * 100
+    return calculate_percentage(total_score, 37.5)
 
 def ce(branch_scores, opels_scores, programming_languages_scores):
     total_score = (
         branch_scores["ECONOMICS"] +
         branch_scores["CSE"] +
         branch_scores["MATHEMATICS"] +
-        programming_languages_scores["C"] +
-        programming_languages_scores["C++"] +
-        programming_languages_scores["Python"] +
-        programming_languages_scores["R"] +
-        programming_languages_scores["Java"] +
-        programming_languages_scores["Go"] +
-        programming_languages_scores["SQL"] +
-        programming_languages_scores["JavaScript"] +
-        programming_languages_scores["Julia"]
+        sum(programming_languages_scores[lang] for lang in ["C", "C++", "Python", "R", "Java", "Go", "SQL", "JavaScript", "Julia"])
     )
-    return (total_score / 62.5) * 100
+    return calculate_percentage(total_score, 62.5)
 
 def cni(branch_scores, opels_scores, programming_languages_scores):
     cs_score = branch_scores["CSE"]
@@ -88,35 +85,22 @@ def cni(branch_scores, opels_scores, programming_languages_scores):
         return 0
     total_score = (
         cs_score +
-        programming_languages_scores["C"] +
-        programming_languages_scores["C++"] +
-        programming_languages_scores["Python"] +
-        programming_languages_scores["R"] +
-        programming_languages_scores["Java"] +
-        programming_languages_scores["Go"] +
-        programming_languages_scores["SQL"] +
-        programming_languages_scores["JavaScript"] +
-        programming_languages_scores["Julia"]
+        sum(programming_languages_scores[lang] for lang in ["C", "C++", "Python", "R", "Java", "Go", "SQL", "JavaScript", "Julia"])
     )
-    return (total_score / 50) * 100
+    return calculate_percentage(total_score, 50)
 
 def ds(branch_scores, opels_scores, programming_languages_scores):
-    total_score = (
-        branch_scores["MATHEMATICS"] +
-        branch_scores["CSE"]
-    )
-    return (total_score / 35) * 100
+    total_score = branch_scores["MATHEMATICS"] + branch_scores["CSE"]
+    return calculate_percentage(total_score, 35)
 
 def entrepreneur(branch_scores, opels_scores, programming_languages_scores):
     score = opels_scores["Entrepreneurship"]
     if score == 0:
         return 0
-    total_score = score + branch_scores["ECONOMICS"]
-    return (total_score / 12.5) * 100
+    return calculate_percentage(score + branch_scores["ECONOMICS"], 12.5)
 
 def fin(branch_scores, opels_scores, programming_languages_scores):
-    finance_score = opels_scores["Finance"]
-    return (finance_score / 5) * 100 if finance_score != 0 else 0
+    return calculate_percentage(opels_scores["Finance"], 5)
 
 def mse(branch_scores, opels_scores, programming_languages_scores):
     materials_score = opels_scores["MaterialSciences"]
@@ -129,21 +113,19 @@ def mse(branch_scores, opels_scores, programming_languages_scores):
         branch_scores["CHEMISTRY"] +
         branch_scores["PHYSICS"]
     )
-    return (total_score / 30) * 100
+    return calculate_percentage(total_score, 30)
 
 def phy(branch_scores, opels_scores, programming_languages_scores):
     physics_score = branch_scores["PHYSICS"]
-    # If PHYSICS is 0 (meaning it's the dual branch), return 0
-    if physics_score == 7.5 or physics_score == 0:
+    if physics_score in [7.5, 0]:  # 7.5 or 0 indicates it's the dual branch or not liked
         return 0
-    else:
-        total_score = (
+    total_score = (
         physics_score +
         branch_scores["EEE"] +
         branch_scores["ENI"] +
         branch_scores["ECE"]
     )
-    return (total_score / 22.5) * 100
+    return calculate_percentage(total_score, 22.5)
 
 def raa(branch_scores, opels_scores, programming_languages_scores):
     robotics_score = opels_scores["RoboticsAndAutomation"]
@@ -156,23 +138,17 @@ def raa(branch_scores, opels_scores, programming_languages_scores):
         branch_scores["ENI"] +
         branch_scores["MECHANICAL"]
     )
-    return (total_score / 27.5) * 100
+    return calculate_percentage(total_score, 27.5)
 
 def sca(branch_scores, opels_scores, programming_languages_scores):
-    total_score = (
-        branch_scores["MATHEMATICS"] +
-        branch_scores["MECHANICAL"]
-    )
-    return (total_score / 15) * 100
+    total_score = branch_scores["MATHEMATICS"] + branch_scores["MECHANICAL"]
+    return calculate_percentage(total_score, 15)
 
 def semiconductors(branch_scores, opels_scores, programming_languages_scores):
-    total_score = (
-        branch_scores["EEE"] +
-        branch_scores["ECE"] +
-        branch_scores["ENI"]
-    )
-    return (total_score / 35) * 100
+    total_score = branch_scores["EEE"] + branch_scores["ECE"] + branch_scores["ENI"]
+    return calculate_percentage(total_score, 35)
 
+# Route handlers
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -181,8 +157,6 @@ def index():
 def submit_form():
     try:
         form_data = request.form.to_dict()
-        
-        # Parse the form data
         branch_scores, opels_scores, programming_languages_scores = parse_form_data(form_data)
         
         # Calculate scores for each minor
@@ -204,19 +178,10 @@ def submit_form():
         sorted_minors = sorted(results.items(), key=lambda x: x[1], reverse=True)[:5]
         top_5_minors = {name: round(score, 2) for name, score in sorted_minors}
         
-        return jsonify({
-            "success": True,
-            "top_5_minors": top_5_minors
-        })
+        return jsonify({"success": True, "top_5_minors": top_5_minors})
         
     except Exception as e:
-        return jsonify({
-            "success": False,
-            "error": str(e)
-        }), 400
+        return jsonify({"success": False, "error": str(e)}), 400
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
-
-
-
