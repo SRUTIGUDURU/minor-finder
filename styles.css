@@ -14,13 +14,13 @@ body {
 /* Form styling */
 form {
     background-color: #ffffff;
-    padding: 20px 15px; /* Reduced padding for a smaller box */
+    padding: 20px 15px;
     border-radius: 12px;
     box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
     max-width: 450px;
     width: 100%;
-    max-height: 80vh; /* Restricts the height to 80% of the viewport */
-    overflow-y: auto; /* Allows scrolling if the content exceeds the max-height */
+    max-height: 80vh;
+    overflow-y: auto;
     transition: transform 0.2s ease;
 }
 
@@ -33,7 +33,7 @@ h1 {
     font-size: 26px;
     color: #444444;
     text-align: center;
-    margin-bottom: 15px; /* Reduced margin to fit better */
+    margin-bottom: 15px;
     font-weight: 600;
 }
 
@@ -46,27 +46,27 @@ form label {
     font-size: 14px;
 }
 
-form select, 
-form input[type="text"], 
-form button, 
-form input[type="checkbox"], 
+form select,
+form input[type="text"],
+form button,
+form input[type="checkbox"],
 form input[type="radio"] {
     border-radius: 6px;
     margin-top: 8px;
 }
 
-form select, 
+form select,
 form input[type="text"] {
     width: 100%;
     padding: 10px;
-    margin-bottom: 15px; /* Reduced margin for better fit */
+    margin-bottom: 15px;
     border: 1px solid #dcdcdc;
     font-size: 14px;
     box-sizing: border-box;
     transition: border-color 0.2s ease;
 }
 
-form select:focus, 
+form select:focus,
 form input[type="text"]:focus {
     border-color: #6cb2ff;
     outline: none;
@@ -74,12 +74,16 @@ form input[type="text"]:focus {
 }
 
 /* Spacing for question groups */
-#surveyForm > div, #surveyForm > label, #surveyForm > h3 {
-    margin-bottom: 15px; /* Reduced margin */
+#surveyForm > div,
+#surveyForm > label,
+#surveyForm > h3 {
+    margin-bottom: 15px;
 }
 
 /* Spacing for each radio button or checkbox group */
-form div[id*="Question"], #programmingLanguages, #opels {
+form div[id*="Question"],
+#programmingLanguages,
+#opelRatings {
     margin-bottom: 15px;
 }
 
@@ -124,11 +128,33 @@ button:active {
     background-color: #2d66a4;
 }
 
+/* Result container styling */
+#resultContainer {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
+    margin-top: 20px;
+    display: none;
+}
+
+#resultContainer ul {
+    list-style-type: none;
+    padding: 0;
+    font-size: 1.1em;
+}
+
+#resultContainer li {
+    margin-bottom: 10px;
+}
+
 /* Responsive design for mobile */
 @media (max-width: 600px) {
     form {
         padding: 15px;
-        max-height: 70vh; /* Adjust max-height for smaller screens */
+        max-height: 70vh;
     }
 
     h1 {
@@ -139,35 +165,23 @@ button:active {
         font-size: 14px;
         padding: 10px 20px;
     }
-#resultContainer {
-        background-color: #ffffff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        max-width: 500px;
-        width: 100%;
-        margin-top: 20px;
-        display: none; /* Initially hidden, will be shown after submit */
-    }
 
-    #resultContainer ul {
-        list-style-type: none;
-        padding: 0;
-        font-size: 1.1em;
-    }
-
-    #resultContainer li {
-        margin-bottom: 10px;
+    #resultContainer {
+        padding: 15px;
+        margin-top: 15px;
     }
 
     .form-control {
         margin-bottom: 15px;
     }
 
-    select, input[type="radio"], input[type="checkbox"] {
+    select,
+    input[type="radio"],
+    input[type="checkbox"] {
         width: 100%;
         padding: 8px;
         margin-top: 5px;
         font-size: 1em;
     }
 }
+
