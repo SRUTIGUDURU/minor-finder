@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minor Selection Survey</title>
     <link rel="stylesheet" href="styles.css">
-    <title>Minor Finder</title>
 </head>
 <body>
     <h1>Minor Finder</h1>
@@ -35,22 +35,42 @@
             <label for="dualBranch">Select your dual branch:</label>
             <select id="dualBranch" name="dualBranch" required>
                 <option value="None">None</option>
-                <option value="ECO">ECONOMICS</option>
-                <option value="MATH">MATHEMATICS</option>
+                <option value="ECO">ECO</option>
+                <option value="MATH">MATH</option>
                 <option value="CHEMISTRY">CHEMISTRY</option>
                 <option value="PHYSICS">PHYSICS</option>
                 <option value="BIO">BIOLOGY</option>
             </select>
         </div>
 
-        <div id="otherBranchRatings">
+        <div id="branchRatings">
             <label>Rate your interest in other branches (0-5):</label>
-            <div id="branchRatings">
-                <!-- Will be populated dynamically -->
-            </div>
+            <!-- Radio buttons for branch ratings will be added here dynamically -->
         </div>
 
-        <!-- Other form elements -->
+        <div id="opelRatings">
+            <label>Rate your interest in OPEL courses (0-5):</label>
+            <div>
+                <label>Aeronautics:</label>
+                <input type="number" name="Aeronautics" min="0" max="5" value="0" required>
+            </div>
+            <div>
+                <label>Entrepreneurship:</label>
+                <input type="number" name="Entrepreneurship" min="0" max="5" value="0" required>
+            </div>
+            <div id="financeDiv">
+                <label>Finance:</label>
+                <input type="number" name="Finance" min="0" max="5" value="0" required>
+            </div>
+            <div>
+                <label>Material Sciences:</label>
+                <input type="number" name="MaterialSciences" min="0" max="5" value="0" required>
+            </div>
+            <div>
+                <label>Robotics and Automation:</label>
+                <input type="number" name="RoboticsAndAutomation" min="0" max="5" value="0" required>
+            </div>
+        </div>
 
         <button type="submit">Submit</button>
     </form>
@@ -64,86 +84,60 @@
         const branchSelect = document.getElementById('branch');
         const dualBranchSelect = document.getElementById('dualBranch');
         const branchRatingsDiv = document.getElementById('branchRatings');
+        const financeDiv = document.getElementById('financeDiv');
         const form = document.getElementById('surveyForm');
-        const results = document.getElementById('results');
-        const topMinorslist = document.getElementById('topMinors');
 
         function updateBranchRatings() {
             const selectedBranch = branchSelect.value;
             const selectedDualBranch = dualBranchSelect.value;
-            const branches = ["CS", "ECE", "EEE", "ENI", "MECH", "CHEM", "CIVIL", "ECO", "MATH", "PHYSICS", "CHEMISTRY", "BIO", "PHARMA"];
+            const branches = ["CS", "ECE", "EEE", "ENI", "MECH", "CHEM", "CIVIL", "PHARMA", "ECO", "MATH", "CHEMISTRY", "BIO", "PHYSICS"];
 
             branchRatingsDiv.innerHTML = '';
-
-            if (selectedBranch) {
-                const branchValue = document.querySelector('input[name="branchLike"]:checked')?.value;
-                const valueToSet = branchValue === 'yes' ? '7.5' : '2.5';
-
-                if (selectedBranch === "MnC") {
-                    addBranchInput('CS', 7.5);
-                    addBranchInput('MATH', 7.5);
-                } else {
-                    addBranchInput(selectedBranch, valueToSet);
+            
+            branches.forEach(branch => {
+                if (branch !== selectedBranch && branch !== selectedDualBranch) {
+                    const div = document.createElement('div');
+                    div.innerHTML = `<label>${branch}</label><br>
+                                     <input type="radio" name="${branch}" value="0"> 0
+                                     <input type="radio" name="${branch}" value="1"> 1
+                                     <input type="radio" name="${branch}" value="2"> 2
+                                     <input type="radio" name="${branch}" value="3"> 3
+                                     <input type="radio" name="${branch}" value="4"> 4
+                                     <input type="radio" name="${branch}" value="5"> 5`;
+                    branchRatingsDiv.appendChild(div);
                 }
-            }
-
-            if (selectedDualBranch && selectedDualBranch !== "None") {
-                addBranchInput(selectedDualBranch, 7.5);
-            }
-
-            branches
-                .filter(branch => branch !== selectedBranch && branch !== selectedDualBranch)
-                .forEach(addBranchRating);
-        }
-
-        function addBranchInput(branch, value) {
-            const branchInput = document.createElement('input');
-            branchInput.type = 'hidden';
-            branchInput.name = branch;
-            branchInput.value = value;
-            branchRatingsDiv.appendChild(branchInput);
-        }
-
-        function addBranchRating(branch) {
-            const div = document.createElement('div');
-            div.classList.add('branch-rating');
-            div.innerHTML = `<label>${branch}:</label>`;
-
-            for (let i = 0; i <= 5; i++) {
-                div.innerHTML += `
-                    <input type="radio" name="${branch}" value="${i}" required> ${i}
-                `;
-            }
-
-            branchRatingsDiv.appendChild(div);
+            });
         }
 
         branchSelect.addEventListener('change', updateBranchRatings);
-        dualBranchSelect.addEventListener('change', updateBranchRatings);
-        document.querySelectorAll('input[name="branchLike"]').forEach(radio => {
-            radio.addEventListener('change', updateBranchRatings);
+        dualBranchSelect.addEventListener('change', (e) => {
+            updateBranchRatings();
+            financeDiv.style.display = e.target.value === "ECO" ? 'none' : 'block';
+            if (e.target.value === "ECO") {
+                document.querySelector('input[name="Finance"]').value = '0';
+            }
         });
-
-        updateBranchRatings();
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(form);
+
             try {
                 const response = await fetch('/submit', {
                     method: 'POST',
                     body: formData
                 });
-
                 const data = await response.json();
-
+                
                 if (data.success) {
-                    results.style.display = 'block';
-                    topMinorslist.innerHTML = '';
+                    document.getElementById('results').style.display = 'block';
+                    const topMinorsList = document.getElementById('topMinors');
+                    topMinorsList.innerHTML = '';
+
                     Object.entries(data.top_5_minors).forEach(([minor, score]) => {
                         const li = document.createElement('li');
                         li.textContent = `${minor} (${score}%)`;
-                        topMinorslist.appendChild(li);
+                        topMinorsList.appendChild(li);
                     });
                 } else {
                     alert('Error processing form: ' + data.error);
@@ -152,8 +146,9 @@
                 alert('Error submitting form: ' + error);
             }
         });
+
+        // Initial update
+        updateBranchRatings();
     </script>
 </body>
 </html>
-
-
