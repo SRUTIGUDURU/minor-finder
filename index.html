@@ -88,27 +88,36 @@
         const form = document.getElementById('surveyForm');
 
         function updateBranchRatings() {
-            const selectedBranch = branchSelect.value;
-            const selectedDualBranch = dualBranchSelect.value;
-            const branches = ["CSE", "ECE", "EEE", "ENI", "MECHANICAL", "CHEMICAL", "CIVIL", "PHARMACY", "ECONOMICS", "MATHEMATICS", "CHEMISTRY", "BIOLOGY", "PHYSICS"];
+    const selectedBranch = branchSelect.value;
+    const selectedDualBranch = dualBranchSelect.value;
+    const branches = ["CSE", "MnC", "ECE", "EEE", "ENI", "MECHANICAL", "CHEMICAL", "CIVIL", "PHARMACY", "ECONOMICS", "MATHEMATICS", "CHEMISTRY", "BIOLOGY", "PHYSICS"];
+    
+    branchRatingsDiv.innerHTML = '';
 
-            branchRatingsDiv.innerHTML = '';
-            
-            branches.forEach(branch => {
-                if (branch !== selectedBranch && branch !== selectedDualBranch) {
-                    const div = document.createElement('div');
-                    div.innerHTML = `<label>${branch}</label><br>
-                                     <input type="number" name="${branch}" min="0" max="5" value="0" required>`;
-                    branchRatingsDiv.appendChild(div);
-                }
-            });
+    // Create a set of branches to exclude based on selected branch and dual branch
+    const excludedBranches = new Set([selectedBranch, selectedDualBranch]);
+
+    // If MnC is selected, also exclude CSE and Mathematics
+    if (selectedBranch === "MnC") {
+        excludedBranches.add("CSE");
+        excludedBranches.add("MATHEMATICS");
+    }
+
+    branches.forEach(branch => {
+        if (!excludedBranches.has(branch)) {
+            const div = document.createElement('div');
+            div.innerHTML = `<label>${branch}</label><br>
+                             <input type="number" name="${branch}" min="0" max="5" value="0" required>`;
+            branchRatingsDiv.appendChild(div);
         }
+    });
+}
 
         branchSelect.addEventListener('change', updateBranchRatings);
         dualBranchSelect.addEventListener('change', (e) => {
             updateBranchRatings();
             financeDiv.style.display = e.target.value === "ECONOMICS" ? 'none' : 'block';
-            if (e.target.value === "ECO") {
+            if (e.target.value === "ECONOMICS") {
                 document.querySelector('input[name="Finance"]').value = '0';
             }
         });
