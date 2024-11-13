@@ -87,64 +87,77 @@
         const financeDiv = document.getElementById('financeDiv');
         const form = document.getElementById('surveyForm');
 
-        function updateBranchRatings() {
+      function updateBranchRatings() {
     const selectedBranch = branchSelect.value;
     const selectedDualBranch = dualBranchSelect.value;
-     const branches = ["CSE", "MnC", "ECE", "EEE", "ENI", "MECHANICAL", "CHEMICAL", "CIVIL", "PHARMACY", "ECONOMICS", "MATHEMATICS", "CHEMISTRY", "BIOLOGY", "PHYSICS"];
+    const branches = [
+        "CSE", "MnC", "ECE", "EEE", "ENI", "MECHANICAL", "CHEMICAL", 
+        "CIVIL", "PHARMACY", "ECONOMICS", "MATHEMATICS", "CHEMISTRY", 
+        "BIOLOGY", "PHYSICS"
+    ];
     
     branchRatingsDiv.innerHTML = '';
 
     // Create a set of branches to exclude based on selected branch and dual branch
-const excludedBranches = new Set([selectedBranch, selectedDualBranch, "MnC","PHARMACY"]); // Always exclude MnC
+    const excludedBranches = new Set([selectedBranch, selectedDualBranch, "MnC", "PHARMACY"]); // Always exclude MnC and PHARMACY
 
     branches.forEach(branch => {
         // Only add the branch rating input if it is not in the excludedBranches set
         if (!excludedBranches.has(branch)) {
             const div = document.createElement('div');
-            div.innerHTML = `<label>${branch}</label><br>
-                             <input type="number" name="${branch}" min="0" max="5" value="0" required>`;
+            div.innerHTML = `
+                <label>${branch}</label><br>
+                <input type="number" name="${branch}" min="0" max="5" value="0" required>
+            `;
             branchRatingsDiv.appendChild(div);
         }
     });
 }
 
-        branchSelect.addEventListener('change', updateBranchRatings);
-        dualBranchSelect.addEventListener('change', (e) => {
-            updateBranchRatings();
-            financeDiv.style.display = e.target.value === "ECONOMICS" ? 'none' : 'block';
-            if (e.target.value === "ECONOMICS") {
-                document.querySelector('input[name="Finance"]').value = '0';
-            }
+branchSelect.addEventListener('change', updateBranchRatings);
+
+dualBranchSelect.addEventListener('change', (e) => {
+    updateBranchRatings(); // Make sure branch ratings are updated when dual branch changes
+    financeDiv.style.display = e.target.value === "ECONOMICS" ? 'none' : 'block';
+    if (e.target.value === "ECONOMICS") {
+        document.querySelector('input[name="Finance"]').value = '0';
+    }
+});
+
+// Initial update on page load
+document.addEventListener('DOMContentLoaded', () => {
+    updateBranchRatings();
+});
+
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+
+    try {
+        const response = await fetch('/submit', {
+            method: 'POST',
+            body: formData
         });
+        const data = await response.json();
+        
+        if (data.success) {
+            document.getElementById('results').style.display = 'block';
+            const topMinorsList = document.getElementById('topMinors');
+            topMinorsList.innerHTML = '';
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(form);
+            Object.entries(data.top_5_minors).forEach(([minor, score]) => {
+                const li = document.createElement('li');
+                li.textContent = `${minor} (${score}%)`;
+                topMinorsList.appendChild(li);
+            });
+        } else {
+            alert('Error processing form: ' + data.error);
+        }
+    } catch (error) {
+        alert('Error submitting form: ' + error);
+    }
+});
 
-            try {
-                const response = await fetch('/submit', {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await response.json();
-                
-                if (data.success) {
-                    document.getElementById('results').style.display = 'block';
-                    const topMinorsList = document.getElementById('topMinors');
-                    topMinorsList.innerHTML = '';
-
-                    Object.entries(data.top_5_minors).forEach(([minor, score]) => {
-                        const li = document.createElement('li');
-                        li.textContent = `${minor} (${score}%)`;
-                        topMinorsList.appendChild(li);
-                    });
-                } else {
-                    alert('Error processing form: ' + data.error);
-                }
-            } catch (error) {
-                alert('Error submitting form: ' + error);
-            }
-        });
 
         // Initial update
         updateBranchRatings();
