@@ -34,11 +34,11 @@
             <label for="dualBranch">Select your dual branch:</label>
             <select id="dualBranch" name="dualBranch" required>
                 <option value="None">None</option>
-                <option value="ECO">ECO</option>
-                <option value="MATH">MATH</option>
+                <option value="ECO">ECONOMICS</option>
+                <option value="MATH">MATHEMATICS</option>
                 <option value="CHEMISTRY">CHEMISTRY</option>
                 <option value="PHYSICS">PHYSICS</option>
-                <option value="BIO">BIO</option>
+                <option value="BIO">BIOLOGY</option>
             </select>
         </div>
 
@@ -110,99 +110,67 @@
         function updateBranchRatings() {
             const selectedBranch = branchSelect.value;
             const selectedDualBranch = dualBranchSelect.value;
-            const branches = ["CS", "ECE", "EEE", "ENI", "MECH", "CHEM", "CIVIL", "ECO", "MATH", "PHYSICS", "CHEMISTRY", "BIO","PHARMA"];
+            const branches = ["CS", "ECE", "EEE", "ENI", "MECH", "CHEM", "CIVIL", "ECO", "MATH", "PHYSICS", "CHEMISTRY", "BIO", "PHARMA"];
             
             branchRatingsDiv.innerHTML = '';
             
-            // Add hidden input for selected branch with value based on like/dislike
             if (selectedBranch) {
                 const branchValue = document.querySelector('input[name="branchLike"]:checked')?.value;
                 const valueToSet = branchValue === 'yes' ? '7.5' : '2.5';
                 
                 if (selectedBranch === "MnC") {
-                    // For MnC, set both CS and MATH to 7.5
-                    const csInput = document.createElement('input');
-                    csInput.type = 'hidden';
-                    csInput.name = 'CS';
-                    csInput.value = '7.5';
-                    branchRatingsDiv.appendChild(csInput);
-
-                    const mathInput = document.createElement('input');
-                    mathInput.type = 'hidden';
-                    mathInput.name = 'MATH';
-                    mathInput.value = '7.5';
-                    branchRatingsDiv.appendChild(mathInput);
+                    addBranchInput('CS', 7.5);
+                    addBranchInput('MATH', 7.5);
                 } else {
-                    const branchInput = document.createElement('input');
-                    branchInput.type = 'hidden';
-                    branchInput.name = selectedBranch;
-                    branchInput.value = valueToSet;
-                    branchRatingsDiv.appendChild(branchInput);
+                    addBranchInput(selectedBranch, valueToSet);
                 }
             }
 
-            // Add hidden input for dual branch if selected
             if (selectedDualBranch && selectedDualBranch !== "None") {
-                const dualBranchInput = document.createElement('input');
-                dualBranchInput.type = 'hidden';
-                dualBranchInput.name = selectedDualBranch;
-                dualBranchInput.value = '7.5';
-                branchRatingsDiv.appendChild(dualBranchInput);
+                addBranchInput(selectedDualBranch, 7.5);
             }
 
-            // Handle MnC special case for visible ratings
-            if (selectedBranch === "MnC") {
-                branches
-                    .filter(branch => 
-                        branch !== 'CS' && 
-                        branch !== 'MATH' && 
-                        branch !== selectedDualBranch)
-                    .forEach(addBranchRating);
-            } else {
-                branches
-                    .filter(branch => 
-                        branch !== selectedBranch && 
-                        branch !== selectedDualBranch && 
-                        !(selectedDualBranch === "PHYSICS" && branch === "PHYSICS"))
-                    .forEach(addBranchRating);
-            }
+            branches
+                .filter(branch => branch !== selectedBranch && branch !== selectedDualBranch)
+                .forEach(addBranchRating);
 
-            // If Physics is selected as branch or dual branch, set Physics minor value to 0
             if (selectedBranch === "PHYSICS" || selectedDualBranch === "PHYSICS") {
-                const physicsInput = document.createElement('input');
-                physicsInput.type = 'hidden';
-                physicsInput.name = 'PHYSICS';
-                physicsInput.value = '0';
-                branchRatingsDiv.appendChild(physicsInput);
+                addBranchInput("PHYSICS", 0);
             }
+        }
+
+        function addBranchInput(branch, value) {
+            const branchInput = document.createElement('input');
+            branchInput.type = 'hidden';
+            branchInput.name = branch;
+            branchInput.value = value;
+            branchRatingsDiv.appendChild(branchInput);
         }
 
         function addBranchRating(branch) {
             const div = document.createElement('div');
-            div.innerHTML = `
-                <label>${branch}:</label>
-                <input type="number" name="${branch}" min="0" max="5" value="0" required>
-            `;
+            div.innerHTML = `<label>${branch}:</label><br>`;
+            for (let i = 0; i <= 5; i++) {
+                div.innerHTML += `
+                    <input type="radio" name="${branch}" value="${i}" required> ${i}
+                `;
+                div.innerHTML += '<br>';
+            }
             branchRatingsDiv.appendChild(div);
         }
 
-        // Update branch ratings when any selection changes
         branchSelect.addEventListener('change', updateBranchRatings);
         dualBranchSelect.addEventListener('change', (e) => {
             updateBranchRatings();
-            // Handle Finance OPEL when ECO is selected as dual branch
+            financeDiv.style.display = e.target.value === "ECO" ? 'none' : 'block';
             if (e.target.value === "ECO") {
-                financeDiv.style.display = 'none';
                 document.querySelector('input[name="Finance"]').value = '0';
-            } else {
-                financeDiv.style.display = 'block';
             }
         });
         document.querySelectorAll('input[name="branchLike"]').forEach(radio => {
             radio.addEventListener('change', updateBranchRatings);
         });
 
-        // Initial update
         updateBranchRatings();
 
         form.addEventListener('submit', async (e) => {
@@ -242,108 +210,4 @@
 </body>
 </html>
 
-        function assignDualBranchValue() {
-            const dualBranch = document.getElementById("dualBranch").value;
-            dualBranchValue = dualBranch !== "None" ? 7.5 : 0;
-            updateBranchRatings();
-            updateOpels();
-        }
-
-        function updateBranchRatings() {
-            const branch = document.getElementById("branch").value;
-            const dualBranch = document.getElementById("dualBranch").value;
-            const branchRatings = document.getElementById("branchRatings");
-            const allBranches = ["CS", "ECE", "EEE", "ENI", "MECH", "CHEM", "CIVIL","PHARMA"];
-            const allDualBranches = ["ECO", "MATH", "PHYSICS", "CHEMISTRY", "BIO"];
-            branchRatings.innerHTML = "";
-
-            if (branch) {
-                allBranches.forEach(br => {
-                    if (br !== branch && br !== "PHARMA" && !(branch === "MNC" && (br === "CS" || br === "MATH"))) {
-                        const ratingDiv = document.createElement("div");
-                        ratingDiv.innerHTML = `   
-                            <label>${br}</label>
-                            <input type="radio" name="${br}" value="0"> 0
-                            <input type="radio" name="${br}" value="1"> 1
-                            <input type="radio" name="${br}" value="2"> 2
-                            <input type="radio" name="${br}" value="3"> 3
-                            <input type="radio" name="${br}" value="4"> 4
-                            <input type="radio" name="${br}" value="5"> 5
-                        `;
-                        branchRatings.appendChild(ratingDiv);
-                    }
-                });
-
-                allDualBranches.forEach(dualBr => {
-                    if (dualBr !== dualBranch && !(branch === "MNC" && dualBr === "MATH")) {
-                        const ratingDiv = document.createElement("div");
-                        ratingDiv.innerHTML = `
-                            <label>${dualBr}</label>
-                            <input type="radio" name="${dualBr}" value="0"> 0
-                            <input type="radio" name="${dualBr}" value="1"> 1
-                            <input type="radio" name="${dualBr}" value="2"> 2
-                            <input type="radio" name="${dualBr}" value="3"> 3
-                            <input type="radio" name="${dualBr}" value="4"> 4
-                            <input type="radio" name="${dualBr}" value="5"> 5
-                        `;
-                        branchRatings.appendChild(ratingDiv);
-                    }
-                });
-                document.getElementById("interestRating").style.display = "block";
-            } else {
-                document.getElementById("interestRating").style.display = "none";
-            }
-        }
-
-        function updateOpels() {
-            const dualBranch = document.getElementById("dualBranch").value;
-            const financeOpel = document.getElementById("Finance");
-            financeOpel.style.display = dualBranch === "ECO" ? "block" : "none";
-        }
-
-        function storeProgrammingLanguages() {
-            const selectedLanguages = Array.from(document.querySelectorAll('input[name="programmingLanguages"]:checked'))
-                .map(input => input.value);
-            document.getElementById("selectedLanguages").value = selectedLanguages.join(", ");
-        }
-
-        function submitForm(e) {
-    e.preventDefault();  // Prevents form from reloading the page
-
-    // Prepare data from the form
-    const formData = new FormData(document.getElementById('surveyForm'));
-
-    // Send data via fetch request
-    fetch('/submit', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())  // Expecting JSON response
-    .then(data => {
-        displayTopMinors(data.top_5_minors);
-    })
-    .catch(error => {
-        console.error("Error submitting form:", error);
-    });
-}
-
-function displayTopMinors(topMinors) {
-    const resultContainer = document.getElementById("resultContainer");
-    resultContainer.style.display = "block";  // Make the results container visible
-
-    resultContainer.innerHTML = "<h2>THE TOP FIVE MINORS FOR YOU ARE:</h2>";
-
-    const list = document.createElement("ul");
-    Object.entries(topMinors).forEach(([minor, score]) => {
-        const listItem = document.createElement("li");
-        listItem.textContent = `${minor}: ${score.toFixed(2)}`;
-        list.appendChild(listItem);
-    });
-
-    resultContainer.appendChild(list);
-}
-
-    </script>
-</body>
-</html>
 
