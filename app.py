@@ -141,9 +141,10 @@ def mse(branch_scores, opels_scores, programming_languages_scores):
 def phy(branch_scores, opels_scores, programming_languages_scores):
     physics_score = branch_scores["PHYSICS"]
     # If PHYSICS is 0 (meaning it's the dual branch), return 0
-    if physics_score == 0:
+    if physics_score>0:
         return 0
-    total_score = (
+    else:
+        total_score = (
         physics_score +
         branch_scores["EEE"] +
         branch_scores["ENI"] +
