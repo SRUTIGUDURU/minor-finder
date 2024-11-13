@@ -45,31 +45,31 @@
 
         <div id="branchRatings">
             <label for="branchRatings">Rate your interest in other branches (0-5):</label>
-            <!-- Number inputs for branch ratings will be added here dynamically -->
         </div>
 
         <div id="opelRatings">
             <label>Rate your interest in OPEL courses (0-5):</label>
-            <div>
-                <label>Aeronautics:</label>
-                <input type="number" name="Aeronautics" min="0" max="5" value="0" required>
-            </div>
-            <div>
-                <label>Entrepreneurship:</label>
-                <input type="number" name="Entrepreneurship" min="0" max="5" value="0" required>
-            </div>
-            <div id="financeDiv">
-                <label>Finance:</label>
-                <input type="number" name="Finance" min="0" max="5" value="0" required>
-            </div>
-            <div>
-                <label>Material Sciences:</label>
-                <input type="number" name="MaterialSciences" min="0" max="5" value="0" required>
-            </div>
-            <div>
-                <label>Robotics and Automation:</label>
-                <input type="number" name="RoboticsAndAutomation" min="0" max="5" value="0" required>
-            </div>
+            <div><label>Aeronautics:</label><input type="number" name="Aeronautics" min="0" max="5" value="0" required></div>
+            <div><label>Entrepreneurship:</label><input type="number" name="Entrepreneurship" min="0" max="5" value="0" required></div>
+            <div id="financeDiv"><label>Finance:</label><input type="number" name="Finance" min="0" max="5" value="0" required></div>
+            <div><label>Material Sciences:</label><input type="number" name="MaterialSciences" min="0" max="5" value="0" required></div>
+            <div><label>Robotics and Automation:</label><input type="number" name="RoboticsAndAutomation" min="0" max="5" value="0" required></div>
+        </div>
+
+        <!-- Programming Languages Section -->
+        <label for="programmingLanguages">What programming languages do you know?</label>
+        <div id="programmingLanguages">
+            <input type="checkbox" name="programmingLanguages" value="Matlab"> Matlab
+            <input type="checkbox" name="programmingLanguages" value="Simulink"> Simulink
+            <input type="checkbox" name="programmingLanguages" value="Python"> Python
+            <input type="checkbox" name="programmingLanguages" value="C++"> C++
+            <input type="checkbox" name="programmingLanguages" value="C"> C
+            <input type="checkbox" name="programmingLanguages" value="R"> R
+            <input type="checkbox" name="programmingLanguages" value="Java"> Java
+            <input type="checkbox" name="programmingLanguages" value="Go"> Go
+            <input type="checkbox" name="programmingLanguages" value="SQL"> SQL
+            <input type="checkbox" name="programmingLanguages" value="JavaScript"> JavaScript
+            <input type="checkbox" name="programmingLanguages" value="Julia"> Julia
         </div>
 
         <button type="submit">Submit</button>
@@ -80,80 +80,9 @@
         <ol id="topMinors"></ol>
     </div>
 
-    <script>
-        const branchSelect = document.getElementById('branch');
-        const dualBranchSelect = document.getElementById('dualBranch');
-        const branchRatingsDiv = document.getElementById('branchRatings');
-        const financeDiv = document.getElementById('financeDiv');
-        const form = document.getElementById('surveyForm');
-
-        function updateBranchRatings() {
-            const selectedBranch = branchSelect.value;
-            const selectedDualBranch = dualBranchSelect.value;
-            const branches = ["CSE", "MnC", "ECE", "EEE", "ENI", "MECHANICAL", "CHEMICAL", "CIVIL", "PHARMACY", "ECONOMICS", "MATHEMATICS", "CHEMISTRY", "BIOLOGY", "PHYSICS"];
-            
-            branchRatingsDiv.innerHTML = '';
-            // Create a set of branches to exclude based on selected branch and dual branch
-            const excludedBranches = new Set([selectedBranch, selectedDualBranch, "MnC", "PHARMACY"]);
-            // If MnC is selected, also exclude CSE and Mathematics
-            if (selectedBranch === "MnC") {
-                excludedBranches.add("CSE");
-                excludedBranches.add("MATHEMATICS");
-            }
-
-            branches.forEach(branch => {
-                if (!excludedBranches.has(branch)) {
-                    const div = document.createElement('div');
-                    div.innerHTML = `<label>${branch}</label><br>
-                                     <input type="number" name="${branch}" min="0" max="5" value="0" required>`;
-                    branchRatingsDiv.appendChild(div);
-                }
-            });
-        }
-
-        branchSelect.addEventListener('change', updateBranchRatings);
-        dualBranchSelect.addEventListener('change', (e) => {
-            updateBranchRatings(); // Make sure branch ratings are updated when dual branch changes
-            financeDiv.style.display = e.target.value === "ECONOMICS" ? 'none' : 'block';
-            if (e.target.value === "ECONOMICS") {
-                document.querySelector('input[name="Finance"]').value = '0';
-            }
-        });
-
-        // Initial update on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            updateBranchRatings();
-        });
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(form);
-
-            try {
-                const response = await fetch('/submit', { // Correct fetch request URL
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await response.json();
-                
-                if (data.success) {
-                    document.getElementById('results').style.display = 'block';
-                    const topMinorsList = document.getElementById('topMinors');
-                    topMinorsList.innerHTML = '';
-
-                    Object.entries(data.top_5_minors).forEach(([minor, score]) => {
-                        const li = document.createElement('li');
-                        li.textContent = `${minor} (${score}%)`;
-                        topMinorsList.appendChild(li);
-                    });
-                } else {
-                    alert('Error processing form: ' + data.error);
-                }
-            } catch (error) {
-                alert('Error submitting form: ' + error);
-            }
-        });
-    </script>
+    <script src="submit.js"></script>
 </body>
+</html>
+
 </html>
 
