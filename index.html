@@ -112,7 +112,7 @@
         branchSelect.addEventListener('change', updateBranchRatings);
         dualBranchSelect.addEventListener('change', (e) => {
             updateBranchRatings();
-            financeDiv.style.display = e.target.value === "ECO" ? 'none' : 'block';
+            financeDiv.style.display = e.target.value === "ECONOMICS" ? 'none' : 'block';
             if (e.target.value === "ECO") {
                 document.querySelector('input[name="Finance"]').value = '0';
             }
