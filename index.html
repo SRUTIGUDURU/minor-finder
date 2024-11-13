@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minor Selection Survey</title>
+    <link rel="stylesheet" href="styles.css">
+    <title>Minor Finder</title>
 </head>
 <body>
     <h1>Minor Finder</h1>
@@ -49,46 +50,7 @@
             </div>
         </div>
 
-        <div id="opelRatings">
-            <label>Rate your interest in OPEL courses (0-5):</label>
-            <div>
-                <label>Aeronautics:</label>
-                <input type="number" name="Aeronautics" min="0" max="5" value="0" required>
-            </div>
-            <div>
-                <label>Entrepreneurship:</label>
-                <input type="number" name="Entrepreneurship" min="0" max="5" value="0" required>
-            </div>
-            <div id="financeDiv">
-                <label>Finance:</label>
-                <input type="number" name="Finance" min="0" max="5" value="0" required>
-            </div>
-            <div>
-                <label>Material Sciences:</label>
-                <input type="number" name="MaterialSciences" min="0" max="5" value="0" required>
-            </div>
-            <div>
-                <label>Robotics and Automation:</label>
-                <input type="number" name="RoboticsAndAutomation" min="0" max="5" value="0" required>
-            </div>
-        </div>
-
-        <div>
-            <label>Select programming languages you know:</label>
-            <div>
-                <input type="checkbox" name="languages" value="Matlab"> Matlab
-                <input type="checkbox" name="languages" value="Simulink"> Simulink
-                <input type="checkbox" name="languages" value="Python"> Python
-                <input type="checkbox" name="languages" value="C++"> C++
-                <input type="checkbox" name="languages" value="C"> C
-                <input type="checkbox" name="languages" value="R"> R
-                <input type="checkbox" name="languages" value="Java"> Java
-                <input type="checkbox" name="languages" value="Go"> Go
-                <input type="checkbox" name="languages" value="SQL"> SQL
-                <input type="checkbox" name="languages" value="JavaScript"> JavaScript
-                <input type="checkbox" name="languages" value="Julia"> Julia
-            </div>
-        </div>
+        <!-- Other form elements -->
 
         <button type="submit">Submit</button>
     </form>
@@ -105,19 +67,18 @@
         const form = document.getElementById('surveyForm');
         const results = document.getElementById('results');
         const topMinorslist = document.getElementById('topMinors');
-        const financeDiv = document.getElementById('financeDiv');
 
         function updateBranchRatings() {
             const selectedBranch = branchSelect.value;
             const selectedDualBranch = dualBranchSelect.value;
             const branches = ["CS", "ECE", "EEE", "ENI", "MECH", "CHEM", "CIVIL", "ECO", "MATH", "PHYSICS", "CHEMISTRY", "BIO", "PHARMA"];
-            
+
             branchRatingsDiv.innerHTML = '';
-            
+
             if (selectedBranch) {
                 const branchValue = document.querySelector('input[name="branchLike"]:checked')?.value;
                 const valueToSet = branchValue === 'yes' ? '7.5' : '2.5';
-                
+
                 if (selectedBranch === "MnC") {
                     addBranchInput('CS', 7.5);
                     addBranchInput('MATH', 7.5);
@@ -133,10 +94,6 @@
             branches
                 .filter(branch => branch !== selectedBranch && branch !== selectedDualBranch)
                 .forEach(addBranchRating);
-
-            if (selectedBranch === "PHYSICS" || selectedDualBranch === "PHYSICS") {
-                addBranchInput("PHYSICS", 0);
-            }
         }
 
         function addBranchInput(branch, value) {
@@ -149,24 +106,20 @@
 
         function addBranchRating(branch) {
             const div = document.createElement('div');
-            div.innerHTML = `<label>${branch}:</label><br>`;
+            div.classList.add('branch-rating');
+            div.innerHTML = `<label>${branch}:</label>`;
+
             for (let i = 0; i <= 5; i++) {
                 div.innerHTML += `
                     <input type="radio" name="${branch}" value="${i}" required> ${i}
                 `;
-                div.innerHTML += '<br>';
             }
+
             branchRatingsDiv.appendChild(div);
         }
 
         branchSelect.addEventListener('change', updateBranchRatings);
-        dualBranchSelect.addEventListener('change', (e) => {
-            updateBranchRatings();
-            financeDiv.style.display = e.target.value === "ECO" ? 'none' : 'block';
-            if (e.target.value === "ECO") {
-                document.querySelector('input[name="Finance"]').value = '0';
-            }
-        });
+        dualBranchSelect.addEventListener('change', updateBranchRatings);
         document.querySelectorAll('input[name="branchLike"]').forEach(radio => {
             radio.addEventListener('change', updateBranchRatings);
         });
@@ -176,24 +129,17 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(form);
-            
-            const selectedLanguages = Array.from(document.querySelectorAll('input[name="languages"]:checked'))
-                .map(cb => cb.value)
-                .join(', ');
-            formData.set('selectedLanguages', selectedLanguages);
-
             try {
                 const response = await fetch('/submit', {
                     method: 'POST',
                     body: formData
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.success) {
                     results.style.display = 'block';
                     topMinorslist.innerHTML = '';
-                    
                     Object.entries(data.top_5_minors).forEach(([minor, score]) => {
                         const li = document.createElement('li');
                         li.textContent = `${minor} (${score}%)`;
