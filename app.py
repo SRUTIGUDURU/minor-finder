@@ -13,14 +13,14 @@ def parse_form_data(form_data):
     branch_like = form_data.get("branchLike", "")
     dual_branch = form_data.get("dualBranch", "")
     
-    # Initialize branch scores
+    # Initialize branch scores with default values
     branch_scores = {
         "CSE": 0, "ECE": 0, "EEE": 0, "ENI": 0, "MECHANICAL": 0, 
         "CHEMICAL": 0, "CIVIL": 0, "ECONOMICS": 0, "MATHEMATICS": 0,
         "PHYSICS": 0, "CHEMISTRY": 0, "BIOLOGY": 0
     }
     
-    # Set score for selected branch
+    # Set score for selected branch based on whether they like it
     if selected_branch in branch_scores:
         branch_scores[selected_branch] = 7.5 if branch_like == "yes" else 2.5
     
@@ -28,11 +28,11 @@ def parse_form_data(form_data):
     for branch in branch_scores.keys():
         if branch != selected_branch and branch != dual_branch:
             try:
-                branch_scores[branch] = float(form_data.get(branch, 0))
+                branch_scores[branch] = float(form_data.get(branch, 0))  # Get the rating for the branch
             except (ValueError, TypeError):
-                branch_scores[branch] = 0
+                branch_scores[branch] = 0  # If invalid value, set to 0
 
-    # Parse OPEL scores
+    # Parse OPEL scores (fixed scale 0-5)
     opels_scores = {
         "Aeronautics": float(form_data.get("Aeronautics", 0)),
         "Entrepreneurship": float(form_data.get("Entrepreneurship", 0)),
@@ -41,7 +41,7 @@ def parse_form_data(form_data):
         "RoboticsAndAutomation": float(form_data.get("RoboticsAndAutomation", 0))
     }
 
-    # Parse programming languages
+    # Parse programming languages (selected languages)
     selected_languages = form_data.get("selectedLanguages", "").split(", ") if form_data.get("selectedLanguages") else []
     programming_languages_scores = {
         lang: 5 if lang in selected_languages else 0
@@ -134,7 +134,7 @@ def mse(branch_scores, opels_scores, programming_languages_scores):
 def phy(branch_scores, opels_scores, programming_languages_scores):
     physics_score = branch_scores["PHYSICS"]
     # If PHYSICS is 0 (meaning it's the dual branch), return 0
-    if physics_score==7.5 or physics_score==0:
+    if physics_score == 7.5 or physics_score == 0:
         return 0
     else:
         total_score = (
@@ -217,4 +217,5 @@ def submit_form():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
