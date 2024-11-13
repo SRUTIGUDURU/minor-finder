@@ -45,7 +45,7 @@
 
         <div id="branchRatings">
             <label for="branchRatings">Rate your interest in other branches (0-5):</label>
-            <!-- Radio buttons for branch ratings will be added here dynamically -->
+            <!-- Number inputs for branch ratings will be added here dynamically -->
         </div>
 
         <div id="opelRatings">
@@ -98,12 +98,7 @@
                 if (branch !== selectedBranch && branch !== selectedDualBranch) {
                     const div = document.createElement('div');
                     div.innerHTML = `<label>${branch}</label><br>
-                                     <input type="radio" name="${branch}" value="0"> 0
-                                     <input type="radio" name="${branch}" value="1"> 1
-                                     <input type="radio" name="${branch}" value="2"> 2
-                                     <input type="radio" name="${branch}" value="3"> 3
-                                     <input type="radio" name="${branch}" value="4"> 4
-                                     <input type="radio" name="${branch}" value="5"> 5`;
+                                     <input type="number" name="${branch}" min="0" max="5" value="0" required>`;
                     branchRatingsDiv.appendChild(div);
                 }
             });
