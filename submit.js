@@ -8,6 +8,7 @@ class MinorFinder {
         this.results = document.getElementById('results');
         this.topMinorsList = document.getElementById('topMinors');
         
+        // All possible branches for ratings
         this.branches = [
             "CSE", "ECE", "EEE", "ENI", "MECHANICAL", 
             "CHEMICAL", "CIVIL", "ECONOMICS", "MATHEMATICS", 
@@ -18,45 +19,61 @@ class MinorFinder {
     }
 
     initializeEventListeners() {
+        // Initialize on page load
+        this.updateBranchRatings();
+        
+        // Add event listeners
         this.branchSelect.addEventListener('change', () => this.updateBranchRatings());
-        this.dualBranchSelect.addEventListener('change', (e) => this.handleDualBranchChange(e));
+        this.dualBranchSelect.addEventListener('change', (e) => {
+            this.updateBranchRatings();
+            this.handleFinanceVisibility(e);
+        });
         this.form.addEventListener('submit', (e) => this.handleSubmit(e));
-        document.addEventListener('DOMContentLoaded', () => this.updateBranchRatings());
     }
 
     updateBranchRatings() {
         const selectedBranch = this.branchSelect.value;
         const selectedDualBranch = this.dualBranchSelect.value;
-        const excludedBranches = new Set(["MnC", "PHARMACY", selectedBranch, selectedDualBranch]);
-
-        const ratingInputs = this.branches
-            .filter(branch => !excludedBranches.has(branch))
-            .map(branch => this.createRatingInput(branch));
-
-        this.branchRatingsDiv.innerHTML = '<h2>Rate your interest in other branches (0-5):</h2>';
-        ratingInputs.forEach(input => this.branchRatingsDiv.appendChild(input));
-    }
-
-    createRatingInput(branch) {
-        const div = document.createElement('div');
-        div.className = 'rating-item';
-        const id = `rating-${branch.toLowerCase()}`;
         
-        div.innerHTML = `
-            <label for="${id}">${branch}:</label>
-            <input type="number" 
-                   id="${id}"
-                   name="${branch}"
-                   min="0"
-                   max="5"
-                   value="0"
-                   required>
-        `;
-        return div;
+        // Clear existing content
+        this.branchRatingsDiv.innerHTML = '<h3>Rate your interest in other branches (0-5):</h3>';
+        
+        // Create container for ratings
+        const ratingsContainer = document.createElement('div');
+        ratingsContainer.className = 'ratings-container';
+
+        // Filter and create rating inputs
+        this.branches.forEach(branch => {
+            // Skip if branch is selected as main or dual branch
+            if (branch !== selectedBranch && 
+                branch !== selectedDualBranch && 
+                branch !== "MnC" && 
+                branch !== "PHARMACY") {
+                
+                const ratingDiv = document.createElement('div');
+                ratingDiv.className = 'rating-item';
+                
+                ratingDiv.innerHTML = `
+                    <label for="rating_${branch}">${branch}:</label>
+                    <input 
+                        type="number" 
+                        id="rating_${branch}"
+                        name="${branch}"
+                        min="0"
+                        max="5"
+                        value="0"
+                        required
+                    >
+                `;
+                
+                ratingsContainer.appendChild(ratingDiv);
+            }
+        });
+
+        this.branchRatingsDiv.appendChild(ratingsContainer);
     }
 
-    handleDualBranchChange(event) {
-        this.updateBranchRatings();
+    handleFinanceVisibility(event) {
         const isEconomics = event.target.value === "ECONOMICS";
         this.financeDiv.style.display = isEconomics ? 'none' : 'block';
         if (isEconomics) {
@@ -75,42 +92,33 @@ class MinorFinder {
         formData.append('selectedLanguages', selectedLanguages);
 
         try {
-            const response = await this.submitForm(formData);
-            this.handleResponse(response);
+            const response = await fetch('/api/submit', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                this.results.style.display = 'block';
+                this.topMinorsList.innerHTML = '';
+                
+                Object.entries(data.top_5_minors).forEach(([minor, score]) => {
+                    const li = document.createElement('li');
+                    li.textContent = `${minor} (${score}%)`;
+                    this.topMinorsList.appendChild(li);
+                });
+            } else {
+                throw new Error(data.error || 'Unknown error occurred');
+            }
         } catch (error) {
-            this.handleError(error);
+            console.error('Form submission error:', error);
+            alert(`Error submitting form: ${error.message}`);
         }
-    }
-
-    async submitForm(formData) {
-        const response = await fetch('/api/submit', {
-            method: 'POST',
-            body: formData
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        return await response.json();
-    }
-
-    handleResponse(data) {
-        if (!data.success) {
-            throw new Error(data.error || 'Unknown error occurred');
-        }
-
-        this.results.style.display = 'block';
-        this.topMinorsList.innerHTML = Object.entries(data.top_5_minors)
-            .map(([minor, score]) => `<li>${minor} (${score}%)</li>`)
-            .join('');
-    }
-
-    handleError(error) {
-        console.error('Form submission error:', error);
-        alert(`Error submitting form: ${error.message}`);
     }
 }
 
-// Initialize the application
-const minorFinder = new MinorFinder();
+// Initialize the application when the DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    const minorFinder = new MinorFinder();
+});
