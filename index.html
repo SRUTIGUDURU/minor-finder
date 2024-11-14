@@ -3,86 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Minor Selection Survey - Find the best minor for your academic path">
     <title>Minor Selection Survey</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Minor Finder</h1>
-    <form id="surveyForm">
-        <div>
-            <label for="branch">Select your branch:</label>
-            <select id="branch" name="branch" required>
-                <option value="">Select Branch</option>
-                <option value="CSE">CSE</option>
-                <option value="MnC">MnC</option>
-                <option value="ECE">ECE</option>
-                <option value="EEE">EEE</option>
-                <option value="ENI">ENI</option>
-                <option value="MECHANICAL">MECHANICAL</option>
-                <option value="CHEMICAL">CHEMICAL</option>
-                <option value="CIVIL">CIVIL</option>
-                <option value="PHARMACY">PHARMACY</option>
-            </select>
-        </div>
+    <main class="container">
+        <h1>Minor Finder</h1>
+        <form id="surveyForm" class="survey-form">
+            <section class="form-section">
+                <div class="form-group">
+                    <label for="branch">Select your branch:</label>
+                    <select id="branch" name="branch" required>
+                        <option value="">Select Branch</option>
+                        <option value="CSE">CSE</option>
+                        <option value="MnC">MnC</option>
+                        <option value="ECE">ECE</option>
+                        <option value="EEE">EEE</option>
+                        <option value="ENI">ENI</option>
+                        <option value="MECHANICAL">MECHANICAL</option>
+                        <option value="CHEMICAL">CHEMICAL</option>
+                        <option value="CIVIL">CIVIL</option>
+                        <option value="PHARMACY">PHARMACY</option>
+                    </select>
+                </div>
 
-        <div>
-            <label>Do you like your branch?</label>
-            <input type="radio" name="branchLike" value="yes" required> Yes
-            <input type="radio" name="branchLike" value="no" required> No
-        </div>
+                <div class="form-group">
+                    <fieldset>
+                        <legend>Do you like your branch?</legend>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="branchLikeYes" name="branchLike" value="yes" required>
+                                <label for="branchLikeYes">Yes</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="branchLikeNo" name="branchLike" value="no" required>
+                                <label for="branchLikeNo">No</label>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
 
-        <div>
-            <label for="dualBranch">Select your dual branch:</label>
-            <select id="dualBranch" name="dualBranch" required>
-                <option value="None">None</option>
-                <option value="ECONOMICS">ECONOMICS</option>
-                <option value="MATHEMATICS">MATHEMATICS</option>
-                <option value="CHEMISTRY">CHEMISTRY</option>
-                <option value="PHYSICS">PHYSICS</option>
-                <option value="BIOLOGY">BIOLOGY</option>
-            </select>
-        </div>
+                <div class="form-group">
+                    <label for="dualBranch">Select your dual branch:</label>
+                    <select id="dualBranch" name="dualBranch" required>
+                        <option value="None">None</option>
+                        <option value="ECONOMICS">ECONOMICS</option>
+                        <option value="MATHEMATICS">MATHEMATICS</option>
+                        <option value="CHEMISTRY">CHEMISTRY</option>
+                        <option value="PHYSICS">PHYSICS</option>
+                        <option value="BIOLOGY">BIOLOGY</option>
+                    </select>
+                </div>
+            </section>
 
-        <div id="branchRatings">
-            <label for="branchRatings">Rate your interest in other branches (0-5):</label>
-        </div>
+            <section class="form-section">
+                <div id="branchRatings" class="ratings-group">
+                    <h2>Rate your interest in other branches (0-5):</h2>
+                    <!-- Dynamically populated by JavaScript -->
+                </div>
 
-        <div id="opelRatings">
-            <label>Rate your interest in OPEL courses (0-5):</label>
-            <div><label>Aeronautics:</label><input type="number" name="Aeronautics" min="0" max="5" value="0" required></div>
-            <div><label>Entrepreneurship:</label><input type="number" name="Entrepreneurship" min="0" max="5" value="0" required></div>
-            <div id="financeDiv"><label>Finance:</label><input type="number" name="Finance" min="0" max="5" value="0" required></div>
-            <div><label>Material Sciences:</label><input type="number" name="MaterialSciences" min="0" max="5" value="0" required></div>
-            <div><label>Robotics and Automation:</label><input type="number" name="RoboticsAndAutomation" min="0" max="5" value="0" required></div>
-        </div>
+                <div id="opelRatings" class="ratings-group">
+                    <h2>Rate your interest in OPEL courses (0-5):</h2>
+                    <div class="rating-item">
+                        <label for="aeronautics">Aeronautics:</label>
+                        <input type="number" id="aeronautics" name="Aeronautics" min="0" max="5" value="0" required>
+                    </div>
+                    <div class="rating-item">
+                        <label for="entrepreneurship">Entrepreneurship:</label>
+                        <input type="number" id="entrepreneurship" name="Entrepreneurship" min="0" max="5" value="0" required>
+                    </div>
+                    <div id="financeDiv" class="rating-item">
+                        <label for="finance">Finance:</label>
+                        <input type="number" id="finance" name="Finance" min="0" max="5" value="0" required>
+                    </div>
+                    <div class="rating-item">
+                        <label for="materialSciences">Material Sciences:</label>
+                        <input type="number" id="materialSciences" name="MaterialSciences" min="0" max="5" value="0" required>
+                    </div>
+                    <div class="rating-item">
+                        <label for="roboticsAndAutomation">Robotics and Automation:</label>
+                        <input type="number" id="roboticsAndAutomation" name="RoboticsAndAutomation" min="0" max="5" value="0" required>
+                    </div>
+                </div>
+            </section>
 
-        <!-- Programming Languages Section -->
-        <label for="programmingLanguages">What programming languages do you know?</label>
-        <div id="programmingLanguages">
-            <input type="checkbox" name="programmingLanguages" value="Matlab"> Matlab
-            <input type="checkbox" name="programmingLanguages" value="Simulink"> Simulink
-            <input type="checkbox" name="programmingLanguages" value="Python"> Python
-            <input type="checkbox" name="programmingLanguages" value="C++"> C++
-            <input type="checkbox" name="programmingLanguages" value="C"> C
-            <input type="checkbox" name="programmingLanguages" value="R"> R
-            <input type="checkbox" name="programmingLanguages" value="Java"> Java
-            <input type="checkbox" name="programmingLanguages" value="Go"> Go
-            <input type="checkbox" name="programmingLanguages" value="SQL"> SQL
-            <input type="checkbox" name="programmingLanguages" value="JavaScript"> JavaScript
-            <input type="checkbox" name="programmingLanguages" value="Julia"> Julia
-        </div>
+            <section class="form-section">
+                <div class="form-group">
+                    <h2>What programming languages do you know?</h2>
+                    <div id="programmingLanguages" class="checkbox-grid">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="matlab" name="programmingLanguages" value="Matlab">
+                            <label for="matlab">Matlab</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="simulink" name="programmingLanguages" value="Simulink">
+                            <label for="simulink">Simulink</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="python" name="programmingLanguages" value="Python">
+                            <label for="python">Python</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cpp" name="programmingLanguages" value="C++">
+                            <label for="cpp">C++</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="c" name="programmingLanguages" value="C">
+                            <label for="c">C</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="r" name="programmingLanguages" value="R">
+                            <label for="r">R</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="java" name="programmingLanguages" value="Java">
+                            <label for="java">Java</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="go" name="programmingLanguages" value="Go">
+                            <label for="go">Go</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="sql" name="programmingLanguages" value="SQL">
+                            <label for="sql">SQL</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="javascript" name="programmingLanguages" value="JavaScript">
+                            <label for="javascript">JavaScript</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="julia" name="programmingLanguages" value="Julia">
+                            <label for="julia">Julia</label>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-        <button type="submit">Submit</button>
-    </form>
+            <button type="submit" class="submit-btn">Find My Minor</button>
+        </form>
 
-    <div id="results" style="display: none;">
-        <h2>The top five minors for you to choose are:</h2>
-        <ol id="topMinors"></ol>
-    </div>
+        <section id="results" class="results-section" style="display: none;">
+            <h2>The top five minors for you to choose are:</h2>
+            <ol id="topMinors" class="results-list"></ol>
+        </section>
+    </main>
 
     <script src="submit.js"></script>
 </body>
 </html>
-
-</html>
-
