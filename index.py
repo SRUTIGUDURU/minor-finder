@@ -164,11 +164,9 @@ class FormDataParser:
 @app.route('/api/submit', methods=['POST'])
 def submit_form():
     try:
-        # Parse form data
         form_data = request.form.to_dict()
         branch_scores, opels_scores, programming_languages_scores = FormDataParser.parse_form_data(form_data)
         
-        # Calculate minor scores
         calculator = MinorScoreCalculator(branch_scores, opels_scores, programming_languages_scores)
         
         results = {
@@ -185,7 +183,6 @@ def submit_form():
             "Material Science Engineering": calculator.mse()
         }
         
-        # Sort and get top 5 minors
         sorted_minors = sorted(results.items(), key=lambda x: x[1], reverse=True)[:5]
         top_5_minors = {name: round(score, 2) for name, score in sorted_minors}
         
@@ -193,6 +190,7 @@ def submit_form():
         
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
