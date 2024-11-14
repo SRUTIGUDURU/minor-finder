@@ -2,93 +2,93 @@ class MinorFinder {
     constructor() {
         this.branchSelect = document.getElementById('branch');
         this.dualBranchSelect = document.getElementById('dualBranch');
-        this.branchRatingsDiv = document.getElementById('branchRatings');
+        this.branchRatingsContainer = document.querySelector('.branch-ratings-container');
         this.financeDiv = document.getElementById('financeDiv');
         this.form = document.getElementById('surveyForm');
+        this.results = document.getElementById('results');
+        this.topMinorsList = document.getElementById('topMinors');
         
-        // All possible branches that can be rated
-        this.allBranches = [
-            "CSE", "ECE", "EEE", "ENI", "MECHANICAL", 
-            "CHEMICAL", "CIVIL", "ECONOMICS", "MATHEMATICS", 
-            "PHYSICS", "CHEMISTRY", "BIOLOGY"
-        ];
+        // All available branches for rating
+        this.allBranches = {
+            "CSE": "Computer Science and Engineering",
+            "ECE": "Electronics and Communication Engineering",
+            "EEE": "Electrical and Electronics Engineering",
+            "ENI": "Electronics and Instrumentation",
+            "MECHANICAL": "Mechanical Engineering",
+            "CHEMICAL": "Chemical Engineering",
+            "CIVIL": "Civil Engineering",
+            "ECONOMICS": "Economics",
+            "MATHEMATICS": "Mathematics",
+            "PHYSICS": "Physics",
+            "CHEMISTRY": "Chemistry",
+            "BIOLOGY": "Biology"
+        };
         
         this.initializeEventListeners();
-        this.initializeBranchRatings(); // Initialize on page load
+        this.updateBranchRatings(); // Initial rendering
     }
 
     initializeEventListeners() {
         this.branchSelect.addEventListener('change', () => this.updateBranchRatings());
-        this.dualBranchSelect.addEventListener('change', (e) => this.handleDualBranchChange(e));
+        this.dualBranchSelect.addEventListener('change', () => this.updateBranchRatings());
         this.form.addEventListener('submit', (e) => this.handleSubmit(e));
     }
 
-    initializeBranchRatings() {
-        // Create initial branch ratings section
-        this.branchRatingsDiv.innerHTML = '<h2>Rate your interest in other branches (0-5):</h2><div class="ratings-container"></div>';
-        this.updateBranchRatings();
-    }
-
-    getVisibleBranches() {
+    updateBranchRatings() {
         const selectedBranch = this.branchSelect.value;
         const selectedDualBranch = this.dualBranchSelect.value;
         
-        // Start with all branches
-        let visibleBranches = [...this.allBranches];
+        // Clear current ratings
+        this.branchRatingsContainer.innerHTML = '';
         
-        // Remove selected branch and dual branch
-        visibleBranches = visibleBranches.filter(branch => 
-            branch !== selectedBranch && 
-            branch !== selectedDualBranch
-        );
+        // Handle special case for MnC
+        const excludedBranches = new Set([
+            "MnC", 
+            "PHARMACY", 
+            selectedBranch, 
+            selectedDualBranch
+        ]);
         
-        // Special handling for MnC
+        // If MnC is selected, also exclude CSE and MATHEMATICS
         if (selectedBranch === "MnC") {
-            visibleBranches = visibleBranches.filter(branch => 
-                branch !== "CSE" && 
-                branch !== "MATHEMATICS"
-            );
+            excludedBranches.add("CSE");
+            excludedBranches.add("MATHEMATICS");
         }
-        
-        // Remove PHARMACY from ratings (as it's not in the rating system)
-        visibleBranches = visibleBranches.filter(branch => branch !== "PHARMACY");
-        
-        return visibleBranches;
-    }
 
-    updateBranchRatings() {
-        const container = this.branchRatingsDiv.querySelector('.ratings-container');
-        const visibleBranches = this.getVisibleBranches();
-        
-        // Save existing values
-        const existingValues = {};
-        container.querySelectorAll('select').forEach(select => {
-            existingValues[select.name] = select.value;
-        });
-        
-        // Create the new ratings HTML
-        container.innerHTML = visibleBranches.map(branch => {
-            const value = existingValues[branch] || "0";
-            return `
-                <div class="rating-item">
-                    <label for="rating-${branch}">${branch}:</label>
-                    <select id="rating-${branch}" name="${branch}" required>
-                        ${[0, 1, 2, 3, 4, 5].map(num => 
-                            `<option value="${num}" ${value === num.toString() ? 'selected' : ''}>${num}</option>`
-                        ).join('')}
-                    </select>
-                </div>
-            `;
-        }).join('');
-    }
+        // Create rating inputs for remaining branches
+        Object.entries(this.allBranches)
+            .filter(([code]) => !excludedBranches.has(code))
+            .forEach(([code, name]) => {
+                const ratingGroup = this.createRatingGroup(code, name);
+                this.branchRatingsContainer.appendChild(ratingGroup);
+            });
 
-    handleDualBranchChange(event) {
-        this.updateBranchRatings();
-        const isEconomics = event.target.value === "ECONOMICS";
-        this.financeDiv.style.display = isEconomics ? 'none' : 'block';
-        if (isEconomics) {
+        // Handle finance visibility
+        this.financeDiv.style.display = selectedDualBranch === "ECONOMICS" ? 'none' : 'block';
+        if (selectedDualBranch === "ECONOMICS") {
             document.querySelector('input[name="Finance"]').value = '0';
         }
+    }
+
+    createRatingGroup(code, name) {
+        const div = document.createElement('div');
+        div.className = 'rating-item';
+        
+        const id = `rating-${code.toLowerCase()}`;
+        
+        div.innerHTML = `
+            <label for="${id}" title="${name}">${code}:</label>
+            <select id="${id}" name="${code}" required>
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+        `;
+        
+        return div;
     }
 
     async handleSubmit(event) {
@@ -102,30 +102,42 @@ class MinorFinder {
         formData.append('selectedLanguages', selectedLanguages);
 
         try {
-            const response = await fetch('/api/submit', {
-                method: 'POST',
-                body: formData
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                document.getElementById('results').style.display = 'block';
-                const topMinorsList = document.getElementById('topMinors');
-                topMinorsList.innerHTML = Object.entries(data.top_5_minors)
-                    .map(([minor, score]) => `<li>${minor} (${score}%)</li>`)
-                    .join('');
-            } else {
-                throw new Error(data.error || 'Unknown error occurred');
-            }
+            const response = await this.submitForm(formData);
+            this.handleResponse(response);
         } catch (error) {
-            console.error('Form submission error:', error);
-            alert(`Error submitting form: ${error.message}`);
+            this.handleError(error);
         }
+    }
+
+    async submitForm(formData) {
+        const response = await fetch('/api/submit', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        return await response.json();
+    }
+
+    handleResponse(data) {
+        if (!data.success) {
+            throw new Error(data.error || 'Unknown error occurred');
+        }
+
+        this.results.style.display = 'block';
+        this.topMinorsList.innerHTML = Object.entries(data.top_5_minors)
+            .map(([minor, score]) => `<li>${minor} (${score}%)</li>`)
+            .join('');
+    }
+
+    handleError(error) {
+        console.error('Form submission error:', error);
+        alert(`Error submitting form: ${error.message}`);
     }
 }
 
 // Initialize the application
-document.addEventListener('DOMContentLoaded', () => {
-    const minorFinder = new MinorFinder();
-});
+const minorFinder = new MinorFinder();
