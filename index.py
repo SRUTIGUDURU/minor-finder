@@ -151,12 +151,13 @@ class FormDataParser:
             "RoboticsAndAutomation": float(form_data.get("RoboticsAndAutomation", 0))
         }
 
-        # Parse programming languages
+       # Parse programming languages as list
         selected_languages = form_data.get("selectedLanguages", "").split(", ")
         programming_languages_scores = {
-            lang: 5 if lang in selected_languages else 0
-            for lang in ["Matlab", "Simulink", "Python", "C++", "C", "R", "Java", "Go", "SQL", "JavaScript", "Julia"]
+        lang: 5 if lang in selected_languages else 0
+        for lang in ["Matlab", "Simulink", "Python", "C++", "C", "R", "Java", "Go", "SQL", "JavaScript", "Julia"]
         }
+
 
         return branch_scores, opels_scores, programming_languages_scores
 
