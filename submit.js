@@ -139,5 +139,7 @@ class MinorFinder {
     }
 }
 
-// Initialize the application
-const minorFinder = new MinorFinder();
+document.addEventListener('DOMContentLoaded', () => {
+    new MinorFinder();
+});
+
