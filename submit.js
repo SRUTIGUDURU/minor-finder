@@ -7,8 +7,7 @@ class MinorFinder {
         this.form = document.getElementById('surveyForm');
         this.results = document.getElementById('results');
         this.topMinorsList = document.getElementById('topMinors');
-        
-        // All available branches for rating
+
         this.allBranches = {
             "CSE": "Computer Science and Engineering",
             "ECE": "Electronics and Communication Engineering",
@@ -23,9 +22,9 @@ class MinorFinder {
             "CHEMISTRY": "Chemistry",
             "BIOLOGY": "Biology"
         };
-        
+
         this.initializeEventListeners();
-        this.updateBranchRatings(); // Initial rendering
+        this.updateBranchRatings(); // Initial rendering of branch ratings
     }
 
     initializeEventListeners() {
@@ -37,25 +36,21 @@ class MinorFinder {
     updateBranchRatings() {
         const selectedBranch = this.branchSelect.value;
         const selectedDualBranch = this.dualBranchSelect.value;
-        
-        // Clear current ratings
+
+        // Clear current branch ratings
         this.branchRatingsContainer.innerHTML = '';
-        
-        // Handle special case for MnC
+
+        // Exclude selected branch, dual branch, and special cases (MnC and PHARMACY)
         const excludedBranches = new Set([
-            "MnC", 
-            "PHARMACY", 
-            selectedBranch, 
-            selectedDualBranch
+            "MnC", "PHARMACY", selectedBranch, selectedDualBranch
         ]);
-        
-        // If MnC is selected, also exclude CSE and MATHEMATICS
+
         if (selectedBranch === "MnC") {
             excludedBranches.add("CSE");
             excludedBranches.add("MATHEMATICS");
         }
 
-        // Create rating inputs for remaining branches
+        // Populate ratings for remaining branches
         Object.entries(this.allBranches)
             .filter(([code]) => !excludedBranches.has(code))
             .forEach(([code, name]) => {
@@ -63,21 +58,21 @@ class MinorFinder {
                 this.branchRatingsContainer.appendChild(ratingGroup);
             });
 
-        // Handle finance visibility
+        // Toggle finance visibility if Economics is selected as the dual branch
         this.financeDiv.style.display = selectedDualBranch === "ECONOMICS" ? 'none' : 'block';
         if (selectedDualBranch === "ECONOMICS") {
-            document.querySelector('input[name="Finance"]').value = '0';
+            document.getElementById("finance").value = '0';
         }
     }
 
     createRatingGroup(code, name) {
         const div = document.createElement('div');
         div.className = 'rating-item';
-        
+
         const id = `rating-${code.toLowerCase()}`;
-        
+
         div.innerHTML = `
-            <label for="${id}" title="${name}">${code}:</label>
+            <label for="${id}" title="${name}">${name}:</label>
             <select id="${id}" name="${code}" required>
                 <option value="0">0</option>
                 <option value="1">1</option>
@@ -87,19 +82,21 @@ class MinorFinder {
                 <option value="5">5</option>
             </select>
         `;
-        
+
         return div;
     }
 
     async handleSubmit(event) {
         event.preventDefault();
+
         const formData = new FormData(this.form);
-        
-        // Add selected programming languages
+
+        // Add selected programming languages to formData
         const selectedLanguages = Array.from(
             document.querySelectorAll('input[name="programmingLanguages"]:checked')
-        ).map(input => input.value).join(", ");
-        formData.append('selectedLanguages', selectedLanguages);
+        ).map(input => input.value);
+        
+        selectedLanguages.forEach(lang => formData.append('programmingLanguages', lang));
 
         try {
             const response = await this.submitForm(formData);
@@ -114,11 +111,11 @@ class MinorFinder {
             method: 'POST',
             body: formData
         });
-        
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         return await response.json();
     }
 
@@ -127,19 +124,9 @@ class MinorFinder {
             throw new Error(data.error || 'Unknown error occurred');
         }
 
+        // Display results
         this.results.style.display = 'block';
         this.topMinorsList.innerHTML = Object.entries(data.top_5_minors)
             .map(([minor, score]) => `<li>${minor} (${score}%)</li>`)
             .join('');
-    }
-
-    handleError(error) {
-        console.error('Form submission error:', error);
-        alert(`Error submitting form: ${error.message}`);
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    new MinorFinder();
-});
-
+    
