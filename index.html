@@ -11,7 +11,6 @@
     <main class="container">
         <h1>Minor Finder</h1>
         <form id="surveyForm" class="survey-form">
-            <!-- Branch Selection -->
             <section class="form-section">
                 <div class="form-group">
                     <label for="branch">Select your branch:</label>
@@ -28,7 +27,6 @@
                         <option value="PHARMACY">PHARMACY</option>
                     </select>
                 </div>
-
                 <div class="form-group">
                     <fieldset>
                         <legend>Do you like your branch?</legend>
@@ -44,7 +42,6 @@
                         </div>
                     </fieldset>
                 </div>
-
                 <div class="form-group">
                     <label for="dualBranch">Select your dual branch:</label>
                     <select id="dualBranch" name="dualBranch" required>
@@ -57,17 +54,11 @@
                     </select>
                 </div>
             </section>
-
-            <!-- Rating Other Branches -->
             <section class="form-section">
                 <div id="branchRatings" class="ratings-group">
                     <h2>Rate your interest in other branches (0-5):</h2>
-                    <div class="branch-ratings-container">
-                        <!-- Branch ratings will be dynamically populated here -->
-                    </div>
+                    <div class="branch-ratings-container"></div>
                 </div>
-
-                <!-- Rating OPEL Courses -->
                 <div id="opelRatings" class="ratings-group">
                     <h2>Rate your interest in OPEL courses (0-5):</h2>
                     <div class="rating-item">
@@ -82,30 +73,12 @@
                         <label for="finance">Finance:</label>
                         <input type="number" id="finance" name="Finance" min="0" max="5" value="0" required>
                     </div>
-                    <div class="rating-item">
-                        <label for="materialSciences">Material Sciences:</label>
-                        <input type="number" id="materialSciences" name="MaterialSciences" min="0" max="5" value="0" required>
-                    </div>
-                    <div class="rating-item">
-                        <label for="roboticsAndAutomation">Robotics and Automation:</label>
-                        <input type="number" id="roboticsAndAutomation" name="RoboticsAndAutomation" min="0" max="5" value="0" required>
-                    </div>
                 </div>
             </section>
-
-            <!-- Programming Languages Section -->
             <section class="form-section">
                 <div class="form-group">
                     <h2>What programming languages do you know?</h2>
                     <div id="programmingLanguages" class="checkbox-grid">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="matlab" name="programmingLanguages" value="Matlab">
-                            <label for="matlab">Matlab</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="simulink" name="programmingLanguages" value="Simulink">
-                            <label for="simulink">Simulink</label>
-                        </div>
                         <div class="checkbox-item">
                             <input type="checkbox" id="python" name="programmingLanguages" value="Python">
                             <label for="python">Python</label>
@@ -114,48 +87,16 @@
                             <input type="checkbox" id="cpp" name="programmingLanguages" value="C++">
                             <label for="cpp">C++</label>
                         </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="c" name="programmingLanguages" value="C">
-                            <label for="c">C</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="r" name="programmingLanguages" value="R">
-                            <label for="r">R</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="java" name="programmingLanguages" value="Java">
-                            <label for="java">Java</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="go" name="programmingLanguages" value="Go">
-                            <label for="go">Go</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="sql" name="programmingLanguages" value="SQL">
-                            <label for="sql">SQL</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="javascript" name="programmingLanguages" value="JavaScript">
-                            <label for="javascript">JavaScript</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="julia" name="programmingLanguages" value="Julia">
-                            <label for="julia">Julia</label>
-                        </div>
                     </div>
                 </div>
             </section>
-
             <button type="submit" class="submit-btn">Find My Minor</button>
         </form>
-
         <section id="results" class="results-section" style="display: none;">
             <h2>The top five minors for you to choose are:</h2>
             <ol id="topMinors" class="results-list"></ol>
         </section>
     </main>
-
     <script src="submit.js"></script>
 </body>
 </html>
-
