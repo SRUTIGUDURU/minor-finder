@@ -81,7 +81,7 @@ class MinorFinder {
     }
 
     async handleSubmit(event) {
-        event.preventDefault();
+        event.preventDefault(); // Prevent the default form submission behavior
 
         const formData = new FormData(this.form);
 
@@ -117,6 +117,7 @@ class MinorFinder {
             throw new Error(data.error || 'Unknown error occurred');
         }
 
+        // Display results
         this.results.style.display = 'block';
         this.topMinorsList.innerHTML = Object.entries(data.top_5_minors)
             .map(([minor, score]) => `<li>${minor} (${score}%)</li>`)
