@@ -40,17 +40,13 @@ class MinorFinder {
         // Clear current branch ratings
         this.branchRatingsContainer.innerHTML = '';
 
-        // Exclude selected branch, dual branch, and special cases (MnC and PHARMACY)
-        const excludedBranches = new Set([
-            "MnC", "PHARMACY", selectedBranch, selectedDualBranch
-        ]);
+        const excludedBranches = new Set(["MnC", "PHARMACY", selectedBranch, selectedDualBranch]);
 
         if (selectedBranch === "MnC") {
             excludedBranches.add("CSE");
             excludedBranches.add("MATHEMATICS");
         }
 
-        // Populate ratings for remaining branches
         Object.entries(this.allBranches)
             .filter(([code]) => !excludedBranches.has(code))
             .forEach(([code, name]) => {
@@ -58,7 +54,6 @@ class MinorFinder {
                 this.branchRatingsContainer.appendChild(ratingGroup);
             });
 
-        // Toggle finance visibility if Economics is selected as the dual branch
         this.financeDiv.style.display = selectedDualBranch === "ECONOMICS" ? 'none' : 'block';
         if (selectedDualBranch === "ECONOMICS") {
             document.getElementById("finance").value = '0';
@@ -70,7 +65,6 @@ class MinorFinder {
         div.className = 'rating-item';
 
         const id = `rating-${code.toLowerCase()}`;
-
         div.innerHTML = `
             <label for="${id}" title="${name}">${name}:</label>
             <select id="${id}" name="${code}" required>
@@ -91,12 +85,11 @@ class MinorFinder {
 
         const formData = new FormData(this.form);
 
-        // Add selected programming languages to formData
         const selectedLanguages = Array.from(
             document.querySelectorAll('input[name="programmingLanguages"]:checked')
         ).map(input => input.value);
-        
-        selectedLanguages.forEach(lang => formData.append('programmingLanguages', lang));
+
+        formData.append('selectedLanguages', selectedLanguages.join(','));
 
         try {
             const response = await this.submitForm(formData);
@@ -124,9 +117,16 @@ class MinorFinder {
             throw new Error(data.error || 'Unknown error occurred');
         }
 
-        // Display results
         this.results.style.display = 'block';
         this.topMinorsList.innerHTML = Object.entries(data.top_5_minors)
             .map(([minor, score]) => `<li>${minor} (${score}%)</li>`)
             .join('');
-    
+    }
+
+    handleError(error) {
+        console.error('An error occurred:', error);
+        alert('An error occurred while submitting the form. Please try again.');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => new MinorFinder());
